@@ -1,7 +1,6 @@
 
 import express from "express";
 import cors from "cors";
-import fetch from "node-fetch";
 
 const app = express();
 app.use(cors());
@@ -32,7 +31,6 @@ app.post("/chat", async (req, res) => {
       "MentorIQ AI is thinking... try again.";
 
     res.json({ reply });
-
   } catch (err) {
     res.json({ reply: "Error: " + err.message });
   }
