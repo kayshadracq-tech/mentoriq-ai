@@ -1,1 +1,70 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MentorIQ AI</title>
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #f4f4f4;
+    }
+
+    #box {
+      width: 90%;
+      max-width: 500px;
+      margin: auto;
+      margin-top: 50px;
+    }
+
+    input {
+      width: 70%;
+      padding: 10px;
+    }
+
+    button {
+      padding: 10px;
+    }
+
+    #chat {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      min-height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="box">
+  <h2>MentorIQ AI</h2>
+  <p>Your Free Learning Mentor</p>
+
+  <input id="msg" placeholder="Ask anything..." />
+  <button onclick="send()">Send</button>
+
+  <div id="chat"></div>
+</div>
+
+<script>
+async function send() {
+  const message = document.getElementById("msg").value;
+
+  document.getElementById("chat").innerHTML = "Thinking...";
+
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("chat").innerHTML =
+    "<b>You:</b> " + message + "<br><br>" +
+    "<b>MentorIQ:</b> " + data.reply;
+}
+</script>
+
+</body>
+  </html>
