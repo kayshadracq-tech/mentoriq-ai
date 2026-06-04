@@ -2,37 +2,53 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
 app.post("/chat", (req, res) => {
-  const message = (req.body.message || "").toLowerCase();
+  const message = (req.body.message || "").toLowerCase().trim();
 
-  let reply = "I am MentorIQ AI 🤖";
+  let reply = "";
 
-  if (message.includes("hello")) {
-    reply = "Hello 👋 I'm MentorIQ AI, your learning assistant.";
+  // Greetings
+  if (message.includes("hi") || message.includes("hello")) {
+    reply = "Hello 👋 I am MentorIQ AI. How can I help you today?";
   }
 
-  else if (message.includes("name")) {
-    reply = "My name is MentorIQ AI.";
+  // Name question
+  else if (message.includes("your name")) {
+    reply = "My name is MentorIQ AI 🤖";
+  }
+
+  // Computer studies
+  else if (message.includes("computer")) {
+    reply = "A computer is an electronic device that processes data and information. It has hardware and software.";
+  }
+
+  // Math
+  else if (message.includes("2+2")) {
+    reply = "2 + 2 = 4";
   }
 
   else if (message.includes("math")) {
-    reply = "I can help with Math. Ask me a question.";
+    reply = "I can help you with Math. Try asking a simple equation like 2+2.";
   }
 
-  else if (message.includes("computer")) {
-    reply = "I can help you with Computer Studies.";
+  // Help
+  else if (message.includes("help")) {
+    reply = "I can help you with Math, Computer Studies, and general learning topics.";
   }
 
-  else if (message.includes("who are you")) {
-    reply = "I am an AI chatbot built to help you learn.";
+  // Yes response
+  else if (message === "yes") {
+    reply = "Great 👍 Please tell me exactly what you need help with.";
   }
 
+  // Default fallback
   else {
-    reply = "I am still learning 🤖. Try asking about math, computers, or greetings.";
+    reply = "I am still learning 🤖. Try asking about math, computer studies, or greetings.";
   }
 
   res.json({ reply });
