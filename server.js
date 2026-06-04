@@ -9,9 +9,9 @@ app.use(express.static("public"));
 
 const HF_TOKEN = process.env.HF_TOKEN;
 
-// Better free AI model (more stable than DialoGPT)
+// Better stable model for free inference
 const HF_API =
-  "https://api-inference.huggingface.co/models/google/flan-t5-base";
+  "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium";
 
 app.post("/chat", async (req, res) => {
   try {
@@ -39,16 +39,16 @@ app.post("/chat", async (req, res) => {
       reply = data.generated_text;
     } 
     else if (data?.error) {
-      reply = "AI is loading... try again in a few seconds.";
+      reply = "Model loading... please try again in 10–20 seconds.";
     } 
     else {
-      reply = "No response from AI.";
+      reply = "AI did not respond properly.";
     }
 
     res.json({ reply });
 
   } catch (err) {
-    res.json({ reply: "Error: " + err.message });
+    res.json({ reply: "Network error: " + err.message });
   }
 });
 
