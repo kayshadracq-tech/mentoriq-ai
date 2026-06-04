@@ -7,51 +7,49 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-app.post("/chat", (req, res) => {
-  const message = (req.body.message || "").toLowerCase().trim();
+const HF_TOKEN = process.env.HF_TOKEN;
 
-  let reply = "";
+// Better free AI model (more stable than DialoGPT)
+const HF_API =
+  "https://api-inference.huggingface.co/models/google/flan-t5-base";
 
-  // Greetings
-  if (message.includes("hi") || message.includes("hello")) {
-    reply = "Hello 👋 I am MentorIQ AI. How can I help you today?";
+app.post("/chat", async (req, res) => {
+  try {
+    const message = req.body.message;
+
+    const response = await fetch(HF_API, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${HF_TOKEN}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: message
+      })
+    });
+
+    const data = await response.json();
+
+    let reply = "";
+
+    if (Array.isArray(data) && data[0]?.generated_text) {
+      reply = data[0].generated_text;
+    } 
+    else if (data?.generated_text) {
+      reply = data.generated_text;
+    } 
+    else if (data?.error) {
+      reply = "AI is loading... try again in a few seconds.";
+    } 
+    else {
+      reply = "No response from AI.";
+    }
+
+    res.json({ reply });
+
+  } catch (err) {
+    res.json({ reply: "Error: " + err.message });
   }
-
-  // Name question
-  else if (message.includes("your name")) {
-    reply = "My name is MentorIQ AI 🤖";
-  }
-
-  // Computer studies
-  else if (message.includes("computer")) {
-    reply = "A computer is an electronic device that processes data and information. It has hardware and software.";
-  }
-
-  // Math
-  else if (message.includes("2+2")) {
-    reply = "2 + 2 = 4";
-  }
-
-  else if (message.includes("math")) {
-    reply = "I can help you with Math. Try asking a simple equation like 2+2.";
-  }
-
-  // Help
-  else if (message.includes("help")) {
-    reply = "I can help you with Math, Computer Studies, and general learning topics.";
-  }
-
-  // Yes response
-  else if (message === "yes") {
-    reply = "Great 👍 Please tell me exactly what you need help with.";
-  }
-
-  // Default fallback
-  else {
-    reply = "I am still learning 🤖. Try asking about math, computer studies, or greetings.";
-  }
-
-  res.json({ reply });
 });
 
 const PORT = process.env.PORT || 3000;
