@@ -42,7 +42,9 @@ body: JSON.stringify({
       });
     }
 
-    const reply = data?.choices?.[0]?.message?.content;
+  const reply =
+  data?.choices?.[0]?.message?.content ||
+  "AI returned empty response.";
 
     if (!reply) {
       return res.json({
