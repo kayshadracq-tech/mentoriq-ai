@@ -15,16 +15,18 @@ app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
+    if (!API_KEY) {
+      return res.json({ reply: "Server error: missing API key" });
+    }
+
     const response = await fetch(URL, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://mentoriq-ai.onrender.com",
-        "X-Title": "MentorIQ AI"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        model: "meta-llama/llama-3.1-8b-instruct:free",
         messages: [
           { role: "user", content: message }
         ]
@@ -33,19 +35,29 @@ app.post("/chat", async (req, res) => {
 
     const data = await response.json();
 
-    res.json({
-      reply:
-        data?.choices?.[0]?.message?.content ||
-        "No response from AI."
-    });
+    // IMPORTANT: show real error if API fails
+    if (!response.ok) {
+      return res.json({
+        reply: `API Error: ${data?.error?.message || JSON.stringify(data)}`
+      });
+    }
+
+    const reply = data?.choices?.[0]?.message?.content;
+
+    if (!reply) {
+      return res.json({
+        reply: `No valid response: ${JSON.stringify(data)}`
+      });
+    }
+
+    res.json({ reply });
 
   } catch (err) {
-    res.json({ reply: "Error: " + err.message });
+    res.json({ reply: "Server Exception: " + err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
   console.log("MentorIQ AI running on port " + PORT);
 });
