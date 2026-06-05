@@ -25,12 +25,12 @@ app.post("/chat", async (req, res) => {
         "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
-        messages: [
-          { role: "user", content: message }
-        ]
-      })
+body: JSON.stringify({
+  model: "mistralai/mistral-7b-instruct",
+  messages: [
+    { role: "user", content: message }
+  ]
+})
     });
 
     const data = await response.json();
