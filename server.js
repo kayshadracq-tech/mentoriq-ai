@@ -7,49 +7,40 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const HF_TOKEN = process.env.HF_TOKEN;
-console.log("HF_TOKEN exists:", !!process.env.HF_TOKEN);
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
-// Better stable model for free inference
-const HF_API =
-  "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium";
+const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
-    const response = await fetch(HF_API, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${HF_TOKEN}`,
-        "Content-Type": "application/json"
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://mentoriq-ai.onrender.com",
+        "X-Title": "MentorIQ AI"
       },
       body: JSON.stringify({
-        inputs: message
+        model: "mistralai/mistral-7b-instruct",
+        messages: [
+          { role: "user", content: message }
+        ]
       })
     });
 
     const data = await response.json();
 
-    let reply = "";
-
-    if (Array.isArray(data) && data[0]?.generated_text) {
-      reply = data[0].generated_text;
-    } 
-    else if (data?.generated_text) {
-      reply = data.generated_text;
-    } 
-    else if (data?.error) {
-      reply = "Model loading... please try again in 10–20 seconds.";
-    } 
-    else {
-      reply = "AI did not respond properly.";
-    }
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      "No response from AI.";
 
     res.json({ reply });
 
   } catch (err) {
-    res.json({ reply: "Network error: " + err.message });
+    res.json({ reply: "Error: " + err.message });
   }
 });
 
