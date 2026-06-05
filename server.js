@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import { fetch } from "undici";
 
 const app = express();
 
@@ -8,7 +9,6 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const API_KEY = process.env.OPENROUTER_API_KEY;
-
 const URL = "https://openrouter.ai/api/v1/chat/completions";
 
 app.post("/chat", async (req, res) => {
@@ -33,14 +33,14 @@ app.post("/chat", async (req, res) => {
 
     const data = await response.json();
 
-    const reply =
-      data?.choices?.[0]?.message?.content ||
-      "No response from AI.";
+    res.json({
+      reply:
+        data?.choices?.[0]?.message?.content ||
+        "No response from AI."
+    });
 
-    res.json({ reply });
-
-  } catch (error) {
-    res.json({ reply: "Error: " + error.message });
+  } catch (err) {
+    res.json({ reply: "Error: " + err.message });
   }
 });
 
