@@ -8,6 +8,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 const HF_TOKEN = process.env.HF_TOKEN;
+console.log("HF_TOKEN exists:", !!process.env.HF_TOKEN);
 
 // Better stable model for free inference
 const HF_API =
