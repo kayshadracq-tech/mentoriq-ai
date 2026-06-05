@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { fetch } from "undici";
 
 const app = express();
 
@@ -16,50 +15,55 @@ app.post("/chat", async (req, res) => {
     const message = req.body.message;
 
     if (!API_KEY) {
-      return res.json({ reply: "Server error: missing API key" });
+      return res.json({
+        reply: "Server error: OPENROUTER_API_KEY is missing in environment variables."
+      });
     }
 
     const response = await fetch(URL, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${API_KEY}`,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://mentoriq-ai.onrender.com",
+        "X-Title": "MentorIQ AI"
       },
-body: JSON.stringify({
-  model: "openai/gpt-4o-mini",
-  messages: [
-    { role: "user", content: message }
-  ]
-})
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini",
+        messages: [
+          { role: "user", content: message }
+        ]
+      })
     });
 
     const data = await response.json();
 
-    // IMPORTANT: show real error if API fails
+    // 🔥 IMPORTANT: show real API errors clearly
     if (!response.ok) {
       return res.json({
-        reply: `API Error: ${data?.error?.message || JSON.stringify(data)}`
+        reply: "OPENROUTER ERROR: " + (data?.error?.message || JSON.stringify(data))
       });
     }
 
-  const reply =
-  data?.choices?.[0]?.message?.content ||
-  "AI returned empty response.";
+    const reply = data?.choices?.[0]?.message?.content;
 
     if (!reply) {
       return res.json({
-        reply: `No valid response: ${JSON.stringify(data)}`
+        reply: "EMPTY RESPONSE FROM AI: " + JSON.stringify(data, null, 2)
       });
     }
 
     res.json({ reply });
 
   } catch (err) {
-    res.json({ reply: "Server Exception: " + err.message });
+    res.json({
+      reply: "SERVER EXCEPTION: " + err.message
+    });
   }
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log("MentorIQ AI running on port " + PORT);
 });
