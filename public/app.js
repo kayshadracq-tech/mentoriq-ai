@@ -204,5 +204,27 @@ function closeSidebar() {
 }
 
 /* INIT */
-newChat();
-renderChats();
+function init() {
+  const chats = getChats();
+
+  if (chats.length > 0) {
+    currentChatId = chats[chats.length - 1].id;
+  } else {
+    const id = Date.now();
+
+    chats.push({
+      id,
+      title: "New Chat",
+      messages: []
+    });
+
+    saveChats(chats);
+
+    currentChatId = id;
+  }
+
+  renderChats();
+  renderMessages();
+}
+
+init();
