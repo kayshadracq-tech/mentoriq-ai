@@ -10,15 +10,25 @@ app.use(express.static("public"));
 const API_KEY = process.env.OPENROUTER_API_KEY;
 const URL = "https://openrouter.ai/api/v1/chat/completions";
 
+/**
+ * SIMPLE MEMORY (per server session)
+ * NOTE: resets when Render restarts (free tier limitation)
+ */
+const chatMemory = [];
+
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
     if (!API_KEY) {
       return res.json({
-        reply: "Server error: OPENROUTER_API_KEY is missing in environment variables."
+        reply: "Server error: OPENROUTER_API_KEY is missing."
       });
     }
+
+    // keep last 10 messages only (memory control)
+    chatMemory.push({ role: "user", content: message });
+    if (chatMemory.length > 10) chatMemory.shift();
 
     const response = await fetch(URL, {
       method: "POST",
@@ -31,14 +41,18 @@ app.post("/chat", async (req, res) => {
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
         messages: [
-          { role: "user", content: message }
+          {
+            role: "system",
+            content: "You are MentorIQ, a helpful, simple student tutor. Keep answers clear and easy."
+          },
+          ...chatMemory
         ]
       })
     });
 
     const data = await response.json();
 
-    // 🔥 IMPORTANT: show real API errors clearly
+    // handle API failure clearly
     if (!response.ok) {
       return res.json({
         reply: "OPENROUTER ERROR: " + (data?.error?.message || JSON.stringify(data))
@@ -49,15 +63,19 @@ app.post("/chat", async (req, res) => {
 
     if (!reply) {
       return res.json({
-        reply: "EMPTY RESPONSE FROM AI: " + JSON.stringify(data, null, 2)
+        reply: "AI returned empty response."
       });
     }
 
-    res.json({ reply });
+    // store AI reply in memory
+    chatMemory.push({ role: "assistant", content: reply });
+    if (chatMemory.length > 10) chatMemory.shift();
+
+    return res.json({ reply });
 
   } catch (err) {
-    res.json({
-      reply: "SERVER EXCEPTION: " + err.message
+    return res.json({
+      reply: "SERVER ERROR: " + err.message
     });
   }
 });
