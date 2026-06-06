@@ -1,16 +1,17 @@
 let currentChatId = null;
+let selectedChatId = null;
 let longPressTimer = null;
 
-/* ===== STORAGE ===== */
+/* STORAGE */
 function getChats() {
-  return JSON.parse(localStorage.getItem("mentoriq_chats") || "[]");
+  return JSON.parse(localStorage.getItem("chats") || "[]");
 }
 
 function saveChats(chats) {
-  localStorage.setItem("mentoriq_chats", JSON.stringify(chats));
+  localStorage.setItem("chats", JSON.stringify(chats));
 }
 
-/* ===== SIDEBAR ===== */
+/* SIDEBAR */
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
@@ -21,20 +22,18 @@ function closeSidebar() {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* ===== NEW CHAT ===== */
+/* CHAT CREATE */
 function newChat() {
   const chats = getChats();
 
   const id = Date.now();
-  const chat = {
+  chats.unshift({
     id,
     title: "New Chat",
     messages: []
-  };
+  });
 
-  chats.unshift(chat);
   saveChats(chats);
-
   currentChatId = id;
 
   renderChats();
@@ -44,37 +43,37 @@ function newChat() {
   document.getElementById("msg").focus();
 }
 
-/* ===== RENDER CHAT LIST ===== */
+/* RENDER CHAT LIST */
 function renderChats() {
-  const chats = getChats();
   const list = document.getElementById("chatList");
+  const chats = getChats();
 
   list.innerHTML = "";
 
   chats.forEach(c => {
     const div = document.createElement("div");
-    div.className = "chat-item" + (c.id === currentChatId ? " active-chat" : "");
+
+    div.className = "chat-item" + (c.id === currentChatId ? " active" : "");
     div.innerText = c.title;
 
-    /* CLICK */
+    // CLICK
     div.onclick = () => {
       currentChatId = c.id;
       renderChats();
       renderMessages();
       closeSidebar();
-      document.getElementById("msg").focus();
     };
 
-    /* LONG PRESS DELETE */
+    // LONG PRESS → OPEN MENU (NOT DELETE)
     div.onmousedown = () => {
       longPressTimer = setTimeout(() => {
-        deleteChat(c.id);
-      }, 800);
+        openMenu(c.id);
+      }, 700);
     };
 
     div.onmouseup = () => clearTimeout(longPressTimer);
     div.ontouchstart = () => {
-      longPressTimer = setTimeout(() => deleteChat(c.id), 800);
+      longPressTimer = setTimeout(() => openMenu(c.id), 700);
     };
     div.ontouchend = () => clearTimeout(longPressTimer);
 
@@ -82,22 +81,46 @@ function renderChats() {
   });
 }
 
-/* ===== DELETE CHAT ===== */
-function deleteChat(id) {
+/* MENU CONTROL */
+function openMenu(id) {
+  selectedChatId = id;
+  document.getElementById("menu").classList.remove("hidden");
+}
+
+function closeMenu() {
+  document.getElementById("menu").classList.add("hidden");
+}
+
+/* DELETE CHAT */
+function deleteChat() {
   let chats = getChats();
-  chats = chats.filter(c => c.id !== id);
+  chats = chats.filter(c => c.id !== selectedChatId);
 
   saveChats(chats);
 
-  if (currentChatId === id) {
+  if (currentChatId === selectedChatId) {
     currentChatId = null;
     document.getElementById("chat").innerHTML = "";
   }
 
+  closeMenu();
   renderChats();
 }
 
-/* ===== RENDER MESSAGES ===== */
+/* RENAME CHAT */
+function renameChat() {
+  let chats = getChats();
+  const chat = chats.find(c => c.id === selectedChatId);
+
+  const name = prompt("Rename chat:", chat.title);
+  if (name) chat.title = name;
+
+  saveChats(chats);
+  closeMenu();
+  renderChats();
+}
+
+/* MESSAGES */
 function renderMessages() {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -119,7 +142,7 @@ function renderMessages() {
   box.scrollTop = box.scrollHeight;
 }
 
-/* ===== SEND MESSAGE ===== */
+/* SEND */
 async function send() {
   const input = document.getElementById("msg");
   const message = input.value.trim();
@@ -155,13 +178,13 @@ async function send() {
     saveChats(chats);
     renderMessages();
 
-  } catch (err) {
-    chat.messages.push({ role: "ai", text: "Connection error" });
+  } catch {
+    chat.messages.push({ role: "ai", text: "Error connecting to AI" });
     saveChats(chats);
     renderMessages();
   }
 }
 
-/* ===== INIT ===== */
+/* INIT */
 newChat();
 renderChats();
