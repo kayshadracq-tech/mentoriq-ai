@@ -63,7 +63,7 @@ body {
 /* MAIN AREA (FIXED CENTER LAYOUT) */
 .menu {
   position: fixed;
-  display: none !important;
+  display: none;
   flex-direction: column;
   background: #1f2937;
   padding: 8px;
@@ -165,7 +165,7 @@ button {
 /* MENU */
 .menu {
   position: fixed;
-  display: none !important;   /* 🔥 critical fix */
+  display: none;   /* 🔥 critical fix */
   flex-direction: column;
   background: #1f2937;
   padding: 8px;
