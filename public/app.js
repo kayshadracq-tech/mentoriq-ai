@@ -112,7 +112,13 @@ function showMenu(target) {
 
 function hideMenu() {
   const menu = document.getElementById("menu");
+  if (!menu) return;
+
   menu.style.display = "none";
+  menu.style.visibility = "hidden";
+  menu.style.opacity = "0";
+  menu.style.left = "0px";
+  menu.style.top = "0px";
 }
 
 /* CHAT ACTIONS */
@@ -281,8 +287,3 @@ function init() {
 }
 
 init();
-
-document.addEventListener("DOMContentLoaded", () => {
-  hideMenu();
-});
-
