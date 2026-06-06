@@ -1,48 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>MentorIQ AI</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-<div id="overlay" class="overlay" onclick="closeSidebar()"></div>
-
 <!-- SIDEBAR -->
 <div id="sidebar" class="sidebar">
-
   <div class="sidebar-header">
     <h3>Chats</h3>
     <button onclick="newChat()">+ New</button>
   </div>
-
   <div id="chatList"></div>
-
 </div>
+
+<!-- OVERLAY (click outside to close) -->
+<div id="overlay" onclick="closeSidebar()"></div>
 
 <!-- MAIN -->
 <div class="main">
 
+  <!-- TOP BAR -->
   <div class="topbar">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-
-    <div class="header-text">
-      <h2>MentorIQ AI</h2>
-      <p class="subtitle">Your Free Learning Mentor</p>
-      <p class="dev">Developed by Kayshadracq-Tech</p>
-    </div>
-
+    <h2>MentorIQ AI</h2>
   </div>
 
+  <p class="subtitle">Your Free Learning Mentor</p>
+  <p class="dev">Developed by Kayshadracq-Tech</p>
+
+  <!-- CHAT BOX -->
   <div class="box">
 
     <div id="chat"></div>
 
     <div class="input-area">
-      <input id="msg" placeholder="Ask MentorIQ anything...">
+      <input id="msg" placeholder="Ask something..." />
       <button onclick="send()">Send</button>
     </div>
 
@@ -51,6 +47,5 @@
 </div>
 
 <script src="app.js"></script>
-
 </body>
 </html>
