@@ -1,5 +1,7 @@
 let currentChatId = null;
+let longPressTimer = null;
 
+/* ===== STORAGE ===== */
 function getChats() {
   return JSON.parse(localStorage.getItem("mentoriq_chats") || "[]");
 }
@@ -8,6 +10,7 @@ function saveChats(chats) {
   localStorage.setItem("mentoriq_chats", JSON.stringify(chats));
 }
 
+/* ===== SIDEBAR ===== */
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
@@ -18,17 +21,20 @@ function closeSidebar() {
   document.getElementById("overlay").classList.remove("show");
 }
 
+/* ===== NEW CHAT ===== */
 function newChat() {
-  const id = Date.now();
   const chats = getChats();
 
-  chats.unshift({
+  const id = Date.now();
+  const chat = {
     id,
     title: "New Chat",
     messages: []
-  });
+  };
 
+  chats.unshift(chat);
   saveChats(chats);
+
   currentChatId = id;
 
   renderChats();
@@ -38,55 +44,60 @@ function newChat() {
   document.getElementById("msg").focus();
 }
 
+/* ===== RENDER CHAT LIST ===== */
 function renderChats() {
   const chats = getChats();
   const list = document.getElementById("chatList");
 
   list.innerHTML = "";
 
-  chats.forEach(chat => {
-    const item = document.createElement("div");
+  chats.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "chat-item" + (c.id === currentChatId ? " active-chat" : "");
+    div.innerText = c.title;
 
-    item.className =
-      "chat-item" +
-      (chat.id === currentChatId ? " active-chat" : "");
-
-    item.innerText = chat.title;
-
-    item.onclick = () => {
-      currentChatId = chat.id;
+    /* CLICK */
+    div.onclick = () => {
+      currentChatId = c.id;
       renderChats();
       renderMessages();
       closeSidebar();
       document.getElementById("msg").focus();
     };
 
-    // LONG PRESS DELETE
-    let timer;
-
-    item.addEventListener("touchstart", () => {
-      timer = setTimeout(() => {
-        if (confirm("Delete this chat?")) {
-          let chats = getChats();
-          chats = chats.filter(c => c.id !== chat.id);
-          saveChats(chats);
-
-          if (currentChatId === chat.id) {
-            currentChatId = null;
-          }
-
-          renderChats();
-          renderMessages();
-        }
+    /* LONG PRESS DELETE */
+    div.onmousedown = () => {
+      longPressTimer = setTimeout(() => {
+        deleteChat(c.id);
       }, 800);
-    });
+    };
 
-    item.addEventListener("touchend", () => clearTimeout(timer));
+    div.onmouseup = () => clearTimeout(longPressTimer);
+    div.ontouchstart = () => {
+      longPressTimer = setTimeout(() => deleteChat(c.id), 800);
+    };
+    div.ontouchend = () => clearTimeout(longPressTimer);
 
-    list.appendChild(item);
+    list.appendChild(div);
   });
 }
 
+/* ===== DELETE CHAT ===== */
+function deleteChat(id) {
+  let chats = getChats();
+  chats = chats.filter(c => c.id !== id);
+
+  saveChats(chats);
+
+  if (currentChatId === id) {
+    currentChatId = null;
+    document.getElementById("chat").innerHTML = "";
+  }
+
+  renderChats();
+}
+
+/* ===== RENDER MESSAGES ===== */
 function renderMessages() {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -108,10 +119,10 @@ function renderMessages() {
   box.scrollTop = box.scrollHeight;
 }
 
+/* ===== SEND MESSAGE ===== */
 async function send() {
   const input = document.getElementById("msg");
   const message = input.value.trim();
-
   if (!message) return;
 
   if (!currentChatId) newChat();
@@ -122,13 +133,11 @@ async function send() {
   chat.messages.push({ role: "user", text: message });
 
   if (chat.title === "New Chat") {
-    chat.title =
-      message.length > 30
-        ? message.substring(0, 30) + "..."
-        : message;
+    chat.title = message.slice(0, 25);
   }
 
   saveChats(chats);
+  renderChats();
   renderMessages();
 
   input.value = "";
@@ -142,28 +151,17 @@ async function send() {
 
     const data = await res.json();
 
-    chat.messages.push({
-      role: "ai",
-      text: data.reply
-    });
-
+    chat.messages.push({ role: "ai", text: data.reply });
     saveChats(chats);
     renderMessages();
 
   } catch (err) {
-    chat.messages.push({
-      role: "ai",
-      text: "Error connecting to AI."
-    });
-
+    chat.messages.push({ role: "ai", text: "Connection error" });
     saveChats(chats);
     renderMessages();
   }
 }
 
-document.getElementById("msg").addEventListener("keypress", e => {
-  if (e.key === "Enter") send();
-});
-
+/* ===== INIT ===== */
 newChat();
 renderChats();
