@@ -191,3 +191,21 @@ button {
   font-size: 12px;
   color: gray;
 }
+
+.chat-item{
+  padding:12px;
+  cursor:pointer;
+  border-bottom:1px solid #ddd;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.chat-item:hover{
+  background:#f5f5f5;
+}
+
+.active-chat{
+  background:#e8f0fe;
+  font-weight:bold;
+  }
