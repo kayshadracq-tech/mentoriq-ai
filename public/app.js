@@ -1,6 +1,7 @@
 let currentChatId = null;
 let selectedChatId = null;
 let longPressTimer = null;
+let isLongPress = false;
 
 /* STORAGE */
 function getChats() {
@@ -22,14 +23,21 @@ function closeSidebar() {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* NEW CHAT */
+/* NEW CHAT (FIXED: NO AUTO DUPLICATION) */
 function newChat() {
   const chats = getChats();
 
   const id = Date.now();
-  chats.unshift({ id, title: "New Chat", messages: [] });
 
+  const chat = {
+    id,
+    title: "New Chat",
+    messages: []
+  };
+
+  chats.unshift(chat);
   saveChats(chats);
+
   currentChatId = id;
 
   renderChats();
@@ -39,7 +47,15 @@ function newChat() {
   document.getElementById("msg").focus();
 }
 
-/* RENDER CHATS */
+/* SELECT CHAT */
+function selectChat(id) {
+  currentChatId = id;
+  renderChats();
+  renderMessages();
+  closeSidebar();
+}
+
+/* RENDER CHATS (FIXED LONG PRESS LOGIC) */
 function renderChats() {
   const list = document.getElementById("chatList");
   const chats = getChats();
@@ -48,21 +64,36 @@ function renderChats() {
 
   chats.forEach(c => {
     const div = document.createElement("div");
+
     div.className = "chat-item" + (c.id === currentChatId ? " active" : "");
     div.innerText = c.title;
 
-    div.onclick = () => {
-      currentChatId = c.id;
-      renderChats();
-      renderMessages();
-      closeSidebar();
-    };
+    /* CLICK (ONLY IF NOT LONG PRESS) */
+    div.addEventListener("click", () => {
+      if (isLongPress) {
+        isLongPress = false;
+        return;
+      }
+      selectChat(c.id);
+    });
 
-    div.onmousedown = () => {
-      longPressTimer = setTimeout(() => openMenu(c.id), 700);
-    };
+    /* LONG PRESS START */
+    div.addEventListener("mousedown", () => {
+      isLongPress = false;
 
-    div.onmouseup = () => clearTimeout(longPressTimer);
+      longPressTimer = setTimeout(() => {
+        isLongPress = true;
+        openMenu(c.id);
+      }, 600);
+    });
+
+    div.addEventListener("mouseup", () => {
+      clearTimeout(longPressTimer);
+    });
+
+    div.addEventListener("mouseleave", () => {
+      clearTimeout(longPressTimer);
+    });
 
     list.appendChild(div);
   });
@@ -81,7 +112,9 @@ function closeMenu() {
 /* DELETE */
 function deleteChat() {
   let chats = getChats();
+
   chats = chats.filter(c => c.id !== selectedChatId);
+
   saveChats(chats);
 
   if (currentChatId === selectedChatId) {
@@ -121,7 +154,9 @@ async function send() {
   const message = input.value.trim();
   if (!message) return;
 
-  if (!currentChatId) newChat();
+  if (!currentChatId) {
+    newChat();
+  }
 
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -133,6 +168,7 @@ async function send() {
   }
 
   saveChats(chats);
+
   renderChats();
   renderMessages();
 
@@ -147,10 +183,18 @@ async function send() {
   const data = await res.json();
 
   chat.messages.push({ role: "ai", text: data.reply });
+
   saveChats(chats);
   renderMessages();
 }
 
-/* INIT */
-newChat();
-renderChats();
+/* INIT (IMPORTANT FIX: NO REPEAT CHAT CREATION BUG) */
+const existingChats = getChats();
+
+if (existingChats.length === 0) {
+  newChat();
+} else {
+  currentChatId = existingChats[0].id;
+  renderChats();
+  renderMessages();
+}
