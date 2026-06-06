@@ -68,8 +68,10 @@ function renderChats() {
 function startPress(e, id) {
   selectedChatId = id;
 
+  const target = e.currentTarget;
+
   pressTimer = setTimeout(() => {
-    showMenu(e);
+    showMenu(target);
   }, 600);
 }
 
@@ -85,8 +87,10 @@ function showMenu(e) {
   menu.style.visibility = "visible";
   menu.style.opacity = "1";
 
-  menu.style.left = e.pageX + "px";
-  menu.style.top = e.pageY + "px";
+  const rect = e.getBoundingClientRect();
+
+menu.style.left = rect.left + "px";
+menu.style.top = rect.bottom + "px";
 }
 
 function hideMenu() {
@@ -136,7 +140,9 @@ function deleteChat() {
 
 /* CLOSE MENU OUTSIDE */
 document.addEventListener("click", (e) => {
-  if (!e.target.closest(".menu") && !e.target.closest(".chat-item")) {
+  const menu = document.getElementById("menu");
+
+  if (!menu.contains(e.target) && !e.target.closest(".chat-item")) {
     hideMenu();
   }
 });
