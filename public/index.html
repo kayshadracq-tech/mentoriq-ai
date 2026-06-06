@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MentorIQ AI</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -30,11 +29,12 @@
   <div class="topbar">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
 
-    <div>
+    <div class="header-text">
       <h2>MentorIQ AI</h2>
       <p class="subtitle">Your Free Learning Mentor</p>
       <p class="dev">Developed by Kayshadracq-Tech</p>
     </div>
+
   </div>
 
   <div class="box">
@@ -42,14 +42,8 @@
     <div id="chat"></div>
 
     <div class="input-area">
-      <input
-        id="msg"
-        placeholder="Ask MentorIQ anything..."
-      >
-
-      <button onclick="send()">
-        Send
-      </button>
+      <input id="msg" placeholder="Ask MentorIQ anything...">
+      <button onclick="send()">Send</button>
     </div>
 
   </div>
