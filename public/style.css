@@ -63,7 +63,7 @@ body {
 /* MAIN AREA (FIXED CENTER LAYOUT) */
 .main {
   width: 100%;
-  padding: 15px;
+  padding: 10px;
 
   display: flex;
   flex-direction: column;
@@ -71,6 +71,7 @@ body {
 
   height: 100vh;
   overflow: hidden;
+  gap: 6px;
 }
 
 /* TOPBAR */
@@ -108,7 +109,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  height: calc(100vh - 180px);
+ .chat-box {
+  height: calc(100vh - 140px);
   min-height: 300px;
   }
 
@@ -201,3 +203,21 @@ button {
   color: #e5e7eb;
   border-bottom-left-radius: 4px;
   }
+
+
+  .topbar {
+  margin-bottom: 2px;
+}
+
+h2 {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle,
+.dev,
+p {
+  margin: 2px 0;
+  line-height: 1.2;
+  }
+
