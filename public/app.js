@@ -1,9 +1,7 @@
 let currentChatId = null;
 let selectedChatId = null;
 let longPressTimer = null;
-let isLongPress = false;
 
-/* STORAGE */
 function getChats() {
   return JSON.parse(localStorage.getItem("chats") || "[]");
 }
@@ -12,30 +10,18 @@ function saveChats(chats) {
   localStorage.setItem("chats", JSON.stringify(chats));
 }
 
-/* SIDEBAR */
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("overlay").classList.toggle("show");
-}
-
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("overlay").classList.remove("show");
-}
-
-/* NEW CHAT (FIXED: NO AUTO DUPLICATION) */
+/* ---------------- CHAT CREATION ---------------- */
 function newChat() {
   const chats = getChats();
 
   const id = Date.now();
 
-  const chat = {
+  chats.push({
     id,
     title: "New Chat",
     messages: []
-  };
+  });
 
-  chats.unshift(chat);
   saveChats(chats);
 
   currentChatId = id;
@@ -44,18 +30,9 @@ function newChat() {
   renderMessages();
 
   closeSidebar();
-  document.getElementById("msg").focus();
 }
 
-/* SELECT CHAT */
-function selectChat(id) {
-  currentChatId = id;
-  renderChats();
-  renderMessages();
-  closeSidebar();
-}
-
-/* RENDER CHATS (FIXED LONG PRESS LOGIC) */
+/* ---------------- RENDER CHATS ---------------- */
 function renderChats() {
   const list = document.getElementById("chatList");
   const chats = getChats();
@@ -64,55 +41,74 @@ function renderChats() {
 
   chats.forEach(c => {
     const div = document.createElement("div");
-
-    div.className = "chat-item" + (c.id === currentChatId ? " active" : "");
+    div.className = "chat-item";
     div.innerText = c.title;
 
-    /* CLICK (ONLY IF NOT LONG PRESS) */
-    div.addEventListener("click", () => {
-      if (isLongPress) {
-        isLongPress = false;
-        return;
-      }
-      selectChat(c.id);
-    });
+    // CLICK = OPEN CHAT
+    div.onclick = () => {
+      currentChatId = c.id;
+      renderMessages();
+      closeSidebar();
+    };
 
-    /* LONG PRESS START */
-    div.addEventListener("mousedown", () => {
-      isLongPress = false;
+    // LONG PRESS = OPTIONS MENU
+    div.onmousedown = (e) => startPress(e, c.id);
+    div.onmouseup = stopPress;
+    div.onmouseleave = stopPress;
 
-      longPressTimer = setTimeout(() => {
-        isLongPress = true;
-        openMenu(c.id);
-      }, 600);
-    });
-
-    div.addEventListener("mouseup", () => {
-      clearTimeout(longPressTimer);
-    });
-
-    div.addEventListener("mouseleave", () => {
-      clearTimeout(longPressTimer);
-    });
+    div.ontouchstart = (e) => startPress(e, c.id);
+    div.ontouchend = stopPress;
 
     list.appendChild(div);
   });
 }
 
-/* MENU */
-function openMenu(id) {
-  selectedChatId = id;
-  document.getElementById("menu").classList.remove("hidden");
+/* ---------------- LONG PRESS ---------------- */
+function startPress(e, id) {
+  stopPress();
+
+  longPressTimer = setTimeout(() => {
+    selectedChatId = id;
+    showMenu(e);
+  }, 600);
 }
 
-function closeMenu() {
-  document.getElementById("menu").classList.add("hidden");
+function stopPress() {
+  clearTimeout(longPressTimer);
 }
 
-/* DELETE */
+/* ---------------- MENU ---------------- */
+function showMenu(e) {
+  const menu = document.getElementById("menu");
+
+  menu.style.display = "flex";
+  menu.style.top = e.pageY + "px";
+  menu.style.left = e.pageX + "px";
+}
+
+/* ---------------- MENU ACTIONS ---------------- */
+function openChat() {
+  currentChatId = selectedChatId;
+  hideMenu();
+  renderMessages();
+}
+
+function renameChat() {
+  const chats = getChats();
+  const chat = chats.find(c => c.id === selectedChatId);
+
+  const name = prompt("Rename chat:", chat.title);
+  if (name) {
+    chat.title = name;
+    saveChats(chats);
+    renderChats();
+  }
+
+  hideMenu();
+}
+
 function deleteChat() {
   let chats = getChats();
-
   chats = chats.filter(c => c.id !== selectedChatId);
 
   saveChats(chats);
@@ -122,11 +118,22 @@ function deleteChat() {
     document.getElementById("chat").innerHTML = "";
   }
 
-  closeMenu();
   renderChats();
+  hideMenu();
 }
 
-/* RENDER MESSAGES */
+function hideMenu() {
+  document.getElementById("menu").style.display = "none";
+}
+
+/* CLOSE MENU ON CLICK OUTSIDE */
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".menu") && !e.target.closest(".chat-item")) {
+    hideMenu();
+  }
+});
+
+/* ---------------- CHAT UI ---------------- */
 function renderMessages() {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -138,37 +145,34 @@ function renderMessages() {
 
   chat.messages.forEach(m => {
     box.innerHTML += `
-      <div class="${m.role}">
+      <p class="${m.role}">
         <b>${m.role === "user" ? "You" : "MentorIQ"}:</b>
         ${m.text}
-      </div>
+      </p>
     `;
   });
 
   box.scrollTop = box.scrollHeight;
 }
 
-/* SEND */
+/* ---------------- SEND ---------------- */
 async function send() {
   const input = document.getElementById("msg");
-  const message = input.value.trim();
-  if (!message) return;
+  const text = input.value.trim();
+  if (!text) return;
 
-  if (!currentChatId) {
-    newChat();
-  }
+  if (!currentChatId) newChat();
 
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
 
-  chat.messages.push({ role: "user", text: message });
+  chat.messages.push({ role: "user", text });
 
   if (chat.title === "New Chat") {
-    chat.title = message.slice(0, 25);
+    chat.title = text.slice(0, 25);
   }
 
   saveChats(chats);
-
   renderChats();
   renderMessages();
 
@@ -177,7 +181,7 @@ async function send() {
   const res = await fetch("/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message })
+    body: JSON.stringify({ message: text })
   });
 
   const data = await res.json();
@@ -188,13 +192,17 @@ async function send() {
   renderMessages();
 }
 
-/* INIT (IMPORTANT FIX: NO REPEAT CHAT CREATION BUG) */
-const existingChats = getChats();
-
-if (existingChats.length === 0) {
-  newChat();
-} else {
-  currentChatId = existingChats[0].id;
-  renderChats();
-  renderMessages();
+/* ---------------- SIDEBAR ---------------- */
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
 }
+
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+/* INIT */
+newChat();
+renderChats();
