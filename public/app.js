@@ -88,6 +88,7 @@ function showMenu(target) {
   menu.style.display = "flex";
   menu.style.visibility = "visible";
   menu.style.opacity = "1";
+  menu.style.pointerEvents = "auto";
 
   const menuWidth = 140;
   const menuHeight = 120;
@@ -118,6 +119,7 @@ function hideMenu() {
   menu.style.opacity = "0";
   menu.style.left = "0px";
   menu.style.top = "0px";
+  menu.style.pointerEvents = "none";
 }
 
 /* CHAT ACTIONS */
