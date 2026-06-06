@@ -82,12 +82,20 @@ function showMenu(e) {
   const menu = document.getElementById("menu");
 
   menu.style.display = "flex";
-  menu.style.top = e.pageY + "px";
+  menu.style.visibility = "visible";
+  menu.style.opacity = "1";
+
   menu.style.left = e.pageX + "px";
+  menu.style.top = e.pageY + "px";
 }
 
 function hideMenu() {
-  document.getElementById("menu").style.display = "none";
+  const menu = document.querySelector(".menu");
+  if (menu) {
+    menu.style.display = "none";
+    menu.style.visibility = "hidden";
+    menu.style.opacity = "0";
+  }
 }
 
 /* CHAT ACTIONS */
@@ -206,6 +214,20 @@ function closeSidebar() {
   document.getElementById("overlay").classList.remove("show");
 }
 
+
+    function forceResetUI() {
+  const menu = document.querySelector(".menu");
+  if (menu) {
+    menu.style.display = "none";
+    menu.style.left = "0px";
+    menu.style.top = "0px";
+    menu.style.visibility = "hidden";
+    menu.style.opacity = "0";
+  }
+}
+
+forceResetUI();
+
 /* INIT */
 function init() {
   const chats = getChats();
@@ -231,3 +253,8 @@ function init() {
 }
 
 init();
+
+document.addEventListener("DOMContentLoaded", () => {
+  hideMenu();
+});
+
