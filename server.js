@@ -43,7 +43,7 @@ app.post("/chat", async (req, res) => {
         messages: [
           {
   {
-  {
+{
   role: "system",
   content: `
 You are MentorIQ AI.
