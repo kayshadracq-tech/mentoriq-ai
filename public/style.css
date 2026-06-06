@@ -152,12 +152,14 @@ button {
 /* MENU */
 .menu {
   position: fixed;
-  display: none;
+  display: none !important;   /* 🔥 critical fix */
   flex-direction: column;
   background: #1f2937;
   padding: 8px;
   border-radius: 8px;
-  z-index: 999;
+  z-index: 9999;
+  min-width: 140px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 /* MOBILE FIX */
