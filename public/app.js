@@ -22,16 +22,12 @@ function closeSidebar() {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* CHAT CREATE */
+/* NEW CHAT */
 function newChat() {
   const chats = getChats();
 
   const id = Date.now();
-  chats.unshift({
-    id,
-    title: "New Chat",
-    messages: []
-  });
+  chats.unshift({ id, title: "New Chat", messages: [] });
 
   saveChats(chats);
   currentChatId = id;
@@ -43,7 +39,7 @@ function newChat() {
   document.getElementById("msg").focus();
 }
 
-/* RENDER CHAT LIST */
+/* RENDER CHATS */
 function renderChats() {
   const list = document.getElementById("chatList");
   const chats = getChats();
@@ -52,11 +48,9 @@ function renderChats() {
 
   chats.forEach(c => {
     const div = document.createElement("div");
-
     div.className = "chat-item" + (c.id === currentChatId ? " active" : "");
     div.innerText = c.title;
 
-    // CLICK
     div.onclick = () => {
       currentChatId = c.id;
       renderChats();
@@ -64,24 +58,17 @@ function renderChats() {
       closeSidebar();
     };
 
-    // LONG PRESS → OPEN MENU (NOT DELETE)
     div.onmousedown = () => {
-      longPressTimer = setTimeout(() => {
-        openMenu(c.id);
-      }, 700);
+      longPressTimer = setTimeout(() => openMenu(c.id), 700);
     };
 
     div.onmouseup = () => clearTimeout(longPressTimer);
-    div.ontouchstart = () => {
-      longPressTimer = setTimeout(() => openMenu(c.id), 700);
-    };
-    div.ontouchend = () => clearTimeout(longPressTimer);
 
     list.appendChild(div);
   });
 }
 
-/* MENU CONTROL */
+/* MENU */
 function openMenu(id) {
   selectedChatId = id;
   document.getElementById("menu").classList.remove("hidden");
@@ -91,11 +78,10 @@ function closeMenu() {
   document.getElementById("menu").classList.add("hidden");
 }
 
-/* DELETE CHAT */
+/* DELETE */
 function deleteChat() {
   let chats = getChats();
   chats = chats.filter(c => c.id !== selectedChatId);
-
   saveChats(chats);
 
   if (currentChatId === selectedChatId) {
@@ -107,20 +93,7 @@ function deleteChat() {
   renderChats();
 }
 
-/* RENAME CHAT */
-function renameChat() {
-  let chats = getChats();
-  const chat = chats.find(c => c.id === selectedChatId);
-
-  const name = prompt("Rename chat:", chat.title);
-  if (name) chat.title = name;
-
-  saveChats(chats);
-  closeMenu();
-  renderChats();
-}
-
-/* MESSAGES */
+/* RENDER MESSAGES */
 function renderMessages() {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -165,24 +138,17 @@ async function send() {
 
   input.value = "";
 
-  try {
-    const res = await fetch("/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message })
-    });
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    chat.messages.push({ role: "ai", text: data.reply });
-    saveChats(chats);
-    renderMessages();
-
-  } catch {
-    chat.messages.push({ role: "ai", text: "Error connecting to AI" });
-    saveChats(chats);
-    renderMessages();
-  }
+  chat.messages.push({ role: "ai", text: data.reply });
+  saveChats(chats);
+  renderMessages();
 }
 
 /* INIT */
