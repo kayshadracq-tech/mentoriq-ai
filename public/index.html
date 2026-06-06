@@ -37,6 +37,7 @@
   </div>
 
 </div>
+  
 
 <script>
 let currentChatId = null;
@@ -53,12 +54,24 @@ function newChat() {
   const id = Date.now();
   const chats = getChats();
 
-  chats.push({ id, messages: [] });
+  chats.push({
+    id,
+    title: "New Chat",
+    messages: []
+  });
+
   saveChats(chats);
 
   currentChatId = id;
+
   renderChats();
   renderMessages();
+
+  // Close hamburger menu
+  document.getElementById("sidebar").classList.remove("open");
+
+  // Focus typing box
+  document.getElementById("msg").focus();
 }
 
 function renderChats() {
@@ -73,9 +86,17 @@ function renderChats() {
     div.innerText = "Chat " + c.id;
 
     div.onclick = () => {
-      currentChatId = c.id;
-      renderMessages();
-    };
+  currentChatId = c.id;
+
+  renderMessages();
+
+  // Close sidebar
+  document.getElementById("sidebar").classList.remove("open");
+
+  // Focus typing box
+  document.getElementById("msg").focus();
+};
+  
 
     list.appendChild(div);
   });
