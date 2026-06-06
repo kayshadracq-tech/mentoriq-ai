@@ -2,40 +2,7 @@
 <html>
 <head>
   <title>MentorIQ AI</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f2f2;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .box {
-      max-width: 500px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    input {
-      width: 70%;
-      padding: 10px;
-    }
-
-    button {
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    #chat {
-      margin-top: 20px;
-      text-align: left;
-    }
-
-    .user { color: blue; }
-    .ai { color: green; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -60,7 +27,6 @@ async function send() {
   const chat = document.getElementById("chat");
 
   chat.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
-
   input.value = "";
 
   try {
@@ -75,6 +41,8 @@ async function send() {
     const data = await res.json();
 
     chat.innerHTML += `<p class="ai"><b>MentorIQ:</b> ${data.reply}</p>`;
+    chat.scrollTop = chat.scrollHeight;
+
   } catch (err) {
     chat.innerHTML += `<p class="ai">Error connecting to AI</p>`;
   }
