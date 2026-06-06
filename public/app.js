@@ -103,13 +103,17 @@ function hideMenu() {
 }
 
 /* CHAT ACTIONS */
-function openChat() {
+function openChat(e) {
+  e.stopPropagation();
+
   currentChatId = selectedChatId;
   renderMessages();
   hideMenu();
 }
 
-function renameChat() {
+function renameChat(e) {
+  e.stopPropagation();
+
   const chats = getChats();
   const chat = chats.find(c => c.id === selectedChatId);
 
@@ -123,7 +127,9 @@ function renameChat() {
   hideMenu();
 }
 
-function deleteChat() {
+function deleteChat(e) {
+  e.stopPropagation();
+
   let chats = getChats();
   chats = chats.filter(c => c.id !== selectedChatId);
 
