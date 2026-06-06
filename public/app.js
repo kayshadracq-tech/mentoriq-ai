@@ -144,11 +144,14 @@ function renderMessages() {
   if (!chat) return;
 
   chat.messages.forEach(m => {
+    const isUser = m.role === "user";
+
     box.innerHTML += `
-      <p class="${m.role}">
-        <b>${m.role === "user" ? "You" : "MentorIQ"}:</b>
-        ${m.text}
-      </p>
+      <div class="msg ${isUser ? "user-msg" : "ai-msg"}">
+        <div class="bubble">
+          ${m.text}
+        </div>
+      </div>
     `;
   });
 
