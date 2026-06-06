@@ -68,6 +68,8 @@ function renderChats() {
 function startPress(e, id) {
   selectedChatId = id;
 
+  if (!e.currentTarget) return;
+
   const target = e.currentTarget;
 
   pressTimer = setTimeout(() => {
@@ -80,26 +82,37 @@ function stopPress() {
 }
 
 /* MENU */
-function showMenu(e) {
+function showMenu(target) {
   const menu = document.getElementById("menu");
+  const rect = target.getBoundingClientRect();
 
   menu.style.display = "flex";
   menu.style.visibility = "visible";
   menu.style.opacity = "1";
 
-  const rect = e.getBoundingClientRect();
+  const menuWidth = 140;
+  const menuHeight = 120;
 
-menu.style.left = rect.left + "px";
-menu.style.top = rect.bottom + "px";
+  let left = rect.left;
+  let top = rect.bottom;
+
+  // prevent overflow right
+  if (left + menuWidth > window.innerWidth) {
+    left = window.innerWidth - menuWidth - 10;
+  }
+
+  // prevent overflow bottom
+  if (top + menuHeight > window.innerHeight) {
+    top = rect.top - menuHeight;
+  }
+
+  menu.style.left = left + "px";
+  menu.style.top = top + "px";
 }
 
 function hideMenu() {
-  const menu = document.querySelector(".menu");
-  if (menu) {
-    menu.style.display = "none";
-    menu.style.visibility = "hidden";
-    menu.style.opacity = "0";
-  }
+  const menu = document.getElementById("menu");
+  menu.style.display = "none";
 }
 
 /* CHAT ACTIONS */
@@ -228,17 +241,20 @@ function closeSidebar() {
 
 
     function forceResetUI() {
-  const menu = document.querySelector(".menu");
+  const menu = document.getElementById("menu");
   if (menu) {
     menu.style.display = "none";
-    menu.style.left = "0px";
-    menu.style.top = "0px";
     menu.style.visibility = "hidden";
     menu.style.opacity = "0";
+    menu.style.left = "0px";
+    menu.style.top = "0px";
   }
 }
 
-forceResetUI();
+document.addEventListener("DOMContentLoaded", () => {
+  forceResetUI();
+  hideMenu();
+});
 
 /* INIT */
 function init() {
