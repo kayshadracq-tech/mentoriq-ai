@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>MentorIQ AI</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -17,13 +17,19 @@
   <div id="chatList"></div>
 </div>
 
-<!-- OVERLAY (click outside to close) -->
+<!-- OVERLAY -->
 <div id="overlay" onclick="closeSidebar()"></div>
+
+<!-- OPTIONS MENU -->
+<div id="menu" class="menu hidden">
+  <button onclick="renameChat()">Rename</button>
+  <button onclick="deleteChat()">Delete</button>
+  <button onclick="closeMenu()">Cancel</button>
+</div>
 
 <!-- MAIN -->
 <div class="main">
 
-  <!-- TOP BAR -->
   <div class="topbar">
     <button class="menu-btn" onclick="toggleSidebar()">☰</button>
     <h2>MentorIQ AI</h2>
@@ -32,12 +38,11 @@
   <p class="subtitle">Your Free Learning Mentor</p>
   <p class="dev">Developed by Kayshadracq-Tech</p>
 
-  <!-- CHAT BOX -->
-  <div class="box">
+  <div class="chat-container">
 
     <div id="chat"></div>
 
-    <div class="input-area">
+    <div class="input-bar">
       <input id="msg" placeholder="Ask something..." />
       <button onclick="send()">Send</button>
     </div>
