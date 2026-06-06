@@ -109,10 +109,9 @@ body {
   display: flex;
   flex-direction: column;
 
- .chat-box {
-  height: calc(100vh - 140px);
+  height: calc(100vh - 140px);  /* ✅ FIXED HERE */
   min-height: 300px;
-  }
+}
 
 /* CHAT AREA */
 #chat {
