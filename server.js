@@ -41,8 +41,7 @@ app.post("/chat", async (req, res) => {
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
         messages: [
-          {
-  {
+  
 {
   role: "system",
   content: `
