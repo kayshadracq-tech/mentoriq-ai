@@ -162,18 +162,6 @@ button {
   cursor: pointer;
 }
 
-/* MENU */
-.menu {
-  position: fixed;
-  display: none;   /* 🔥 critical fix */
-  flex-direction: column;
-  background: #1f2937;
-  padding: 8px;
-  border-radius: 8px;
-  z-index: 9999;
-  min-width: 140px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-}
 
 /* MOBILE FIX */
 @media (max-width: 600px) {
