@@ -31,6 +31,7 @@ function newChat() {
   renderMessages();
 
   closeSidebar();
+  updatePlaceholder();
 }
 
 /* RENDER CHATS */
@@ -46,11 +47,12 @@ function renderChats() {
     div.innerText = c.title;
 
     /* CLICK */
-    div.onclick = () => {
-      currentChatId = c.id;
-      renderMessages();
-      closeSidebar();
-    };
+div.onclick = () => {
+  currentChatId = c.id;
+  renderMessages();
+  updatePlaceholder();
+  closeSidebar();
+};
 
     /* LONG PRESS */
     div.onmousedown = (e) => startPress(e, c.id);
@@ -173,6 +175,20 @@ document.addEventListener("click", (e) => {
   }
 });
 
+
+function updatePlaceholder() {
+  const input = document.getElementById("msg");
+
+  const chats = getChats();
+  const chat = chats.find(c => c.id === currentChatId);
+
+  if (!chat || chat.messages.length === 0) {
+    input.placeholder = "Ask MentorIQ AI...";
+  } else {
+    input.placeholder = "Reply to MentorIQ AI...";
+  }
+}
+
 /* MESSAGES */
 function renderMessages() {
   const chats = getChats();
@@ -181,7 +197,10 @@ function renderMessages() {
   const box = document.getElementById("chat");
   box.innerHTML = "";
 
-  if (!chat) return;
+  if (!chat) {
+    updatePlaceholder();
+    return;
+  }
 
   chat.messages.forEach(m => {
     const isUser = m.role === "user";
@@ -196,6 +215,9 @@ function renderMessages() {
   });
 
   box.scrollTop = box.scrollHeight;
+
+  // ✅ update placeholder depending on chat state
+  updatePlaceholder();
 }
 
 /* SEND */
@@ -233,6 +255,7 @@ async function send() {
 
   saveChats(chats);
   renderMessages();
+  updatePlaceholder();
 }
 
 /* SIDEBAR CONTROL (FIXED) */
