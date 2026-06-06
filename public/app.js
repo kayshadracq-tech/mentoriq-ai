@@ -68,9 +68,8 @@ function renderChats() {
 function startPress(e, id) {
   selectedChatId = id;
 
-  if (!e.currentTarget) return;
-
-  const target = e.currentTarget;
+  const target = e.target.closest(".chat-item");
+  if (!target) return;
 
   pressTimer = setTimeout(() => {
     showMenu(target);
@@ -123,7 +122,7 @@ function hideMenu() {
 
 /* CHAT ACTIONS */
 function openChat(e) {
-  e.stopPropagation();
+  if (e) e.stopPropagation();
 
   currentChatId = selectedChatId;
   renderMessages();
@@ -131,7 +130,7 @@ function openChat(e) {
 }
 
 function renameChat(e) {
-  e.stopPropagation();
+  if (e) e.stopPropagation();
 
   const chats = getChats();
   const chat = chats.find(c => c.id === selectedChatId);
@@ -147,7 +146,7 @@ function renameChat(e) {
 }
 
 function deleteChat(e) {
-  e.stopPropagation();
+  if (e) e.stopPropagation();
 
   let chats = getChats();
   chats = chats.filter(c => c.id !== selectedChatId);
