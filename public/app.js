@@ -1,7 +1,8 @@
 let currentChatId = null;
 let selectedChatId = null;
-let longPressTimer = null;
+let pressTimer = null;
 
+/* STORAGE */
 function getChats() {
   return JSON.parse(localStorage.getItem("chats") || "[]");
 }
@@ -10,7 +11,7 @@ function saveChats(chats) {
   localStorage.setItem("chats", JSON.stringify(chats));
 }
 
-/* ---------------- CHAT CREATION ---------------- */
+/* CREATE CHAT */
 function newChat() {
   const chats = getChats();
 
@@ -32,7 +33,7 @@ function newChat() {
   closeSidebar();
 }
 
-/* ---------------- RENDER CHATS ---------------- */
+/* RENDER CHATS */
 function renderChats() {
   const list = document.getElementById("chatList");
   const chats = getChats();
@@ -44,14 +45,14 @@ function renderChats() {
     div.className = "chat-item";
     div.innerText = c.title;
 
-    // CLICK = OPEN CHAT
+    /* CLICK */
     div.onclick = () => {
       currentChatId = c.id;
       renderMessages();
       closeSidebar();
     };
 
-    // LONG PRESS = OPTIONS MENU
+    /* LONG PRESS */
     div.onmousedown = (e) => startPress(e, c.id);
     div.onmouseup = stopPress;
     div.onmouseleave = stopPress;
@@ -63,21 +64,20 @@ function renderChats() {
   });
 }
 
-/* ---------------- LONG PRESS ---------------- */
+/* LONG PRESS FIX */
 function startPress(e, id) {
-  stopPress();
+  selectedChatId = id;
 
-  longPressTimer = setTimeout(() => {
-    selectedChatId = id;
+  pressTimer = setTimeout(() => {
     showMenu(e);
   }, 600);
 }
 
 function stopPress() {
-  clearTimeout(longPressTimer);
+  clearTimeout(pressTimer);
 }
 
-/* ---------------- MENU ---------------- */
+/* MENU */
 function showMenu(e) {
   const menu = document.getElementById("menu");
 
@@ -86,11 +86,15 @@ function showMenu(e) {
   menu.style.left = e.pageX + "px";
 }
 
-/* ---------------- MENU ACTIONS ---------------- */
+function hideMenu() {
+  document.getElementById("menu").style.display = "none";
+}
+
+/* CHAT ACTIONS */
 function openChat() {
   currentChatId = selectedChatId;
-  hideMenu();
   renderMessages();
+  hideMenu();
 }
 
 function renameChat() {
@@ -122,18 +126,14 @@ function deleteChat() {
   hideMenu();
 }
 
-function hideMenu() {
-  document.getElementById("menu").style.display = "none";
-}
-
-/* CLOSE MENU ON CLICK OUTSIDE */
+/* CLOSE MENU OUTSIDE */
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".menu") && !e.target.closest(".chat-item")) {
     hideMenu();
   }
 });
 
-/* ---------------- CHAT UI ---------------- */
+/* MESSAGES */
 function renderMessages() {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
@@ -155,7 +155,7 @@ function renderMessages() {
   box.scrollTop = box.scrollHeight;
 }
 
-/* ---------------- SEND ---------------- */
+/* SEND */
 async function send() {
   const input = document.getElementById("msg");
   const text = input.value.trim();
@@ -192,7 +192,7 @@ async function send() {
   renderMessages();
 }
 
-/* ---------------- SIDEBAR ---------------- */
+/* SIDEBAR CONTROL (FIXED) */
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
