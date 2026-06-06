@@ -7,47 +7,131 @@
 
 <body>
 
-<div class="box">
-  <h2>MentorIQ AI</h2>
-<p>Your Free Learning Mentor</p>
-<p class="dev">Developed by Kayshadracq-Tech</p>
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <div class="sidebar-header">
+    <h3>Chats</h3>
+    <button onclick="newChat()">+ New</button>
+  </div>
 
-  <input id="msg" placeholder="Ask something..." />
-  <button onclick="send()">Send</button>
+  <div id="chatList"></div>
+</div>
 
-  <div id="chat"></div>
+<!-- MAIN -->
+<div class="main">
+
+  <!-- HAMBURGER -->
+  <div class="topbar">
+    <button onclick="toggleSidebar()" class="menu-btn">☰</button>
+    <h2>MentorIQ AI</h2>
+  </div>
+
+  <p>Your Free Learning Mentor</p>
+  <p class="dev">Developed by Kayshadracq-Tech</p>
+
+  <div class="box">
+    <div id="chat"></div>
+
+    <input id="msg" placeholder="Ask something..." />
+    <button onclick="send()">Send</button>
+  </div>
+
 </div>
 
 <script>
+let currentChatId = null;
+
+function getChats() {
+  return JSON.parse(localStorage.getItem("mentoriq_chats") || "[]");
+}
+
+function saveChats(chats) {
+  localStorage.setItem("mentoriq_chats", JSON.stringify(chats));
+}
+
+function newChat() {
+  const id = Date.now();
+  const chats = getChats();
+
+  chats.push({ id, messages: [] });
+  saveChats(chats);
+
+  currentChatId = id;
+  renderChats();
+  renderMessages();
+}
+
+function renderChats() {
+  const chats = getChats();
+  const list = document.getElementById("chatList");
+
+  list.innerHTML = "";
+
+  chats.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "chat-item";
+    div.innerText = "Chat " + c.id;
+
+    div.onclick = () => {
+      currentChatId = c.id;
+      renderMessages();
+    };
+
+    list.appendChild(div);
+  });
+}
+
+function renderMessages() {
+  const chats = getChats();
+  const chat = chats.find(c => c.id === currentChatId);
+
+  const box = document.getElementById("chat");
+  box.innerHTML = "";
+
+  if (!chat) return;
+
+  chat.messages.forEach(m => {
+    box.innerHTML += `<p class="${m.role}"><b>${m.role === "user" ? "You" : "MentorIQ"}:</b> ${m.text}</p>`;
+  });
+}
+
 async function send() {
   const input = document.getElementById("msg");
   const message = input.value.trim();
 
   if (!message) return;
 
-  const chat = document.getElementById("chat");
+  if (!currentChatId) newChat();
 
-  chat.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
+  const chats = getChats();
+  const chat = chats.find(c => c.id === currentChatId);
+
+  chat.messages.push({ role: "user", text: message });
+  saveChats(chats);
+
+  renderMessages();
   input.value = "";
 
-  try {
-    const res = await fetch("/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message })
-    });
+  const res = await fetch("/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message })
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    chat.innerHTML += `<p class="ai"><b>MentorIQ:</b> ${data.reply}</p>`;
-    chat.scrollTop = chat.scrollHeight;
+  chat.messages.push({ role: "ai", text: data.reply });
+  saveChats(chats);
 
-  } catch (err) {
-    chat.innerHTML += `<p class="ai">Error connecting to AI</p>`;
-  }
+  renderMessages();
 }
+
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+newChat();
+renderChats();
 </script>
 
 </body>
