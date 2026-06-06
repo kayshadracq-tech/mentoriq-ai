@@ -1,38 +1,38 @@
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  margin: 0;
   font-family: Arial;
   background: #0f172a;
   color: white;
+  display: flex;
 }
 
 /* OVERLAY */
 #overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   display: none;
+  z-index: 5;
 }
-#overlay.show {
-  display: block;
-}
+#overlay.show { display: block; }
 
-/* SIDEBAR */
+/* SIDEBAR (DESKTOP DEFAULT) */
 .sidebar {
-  position: fixed;
-  left: -260px;
-  top: 0;
   width: 260px;
   height: 100vh;
   background: #111827;
-  transition: 0.3s;
   padding: 10px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: 0.3s;
   z-index: 10;
 }
-.sidebar.open { left: 0; }
 
 .sidebar-header {
   display: flex;
@@ -40,6 +40,14 @@ body {
   align-items: center;
 }
 
+.sidebar-header button {
+  background: #38bdf8;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* CHAT ITEMS */
 .chat-item {
   padding: 10px;
   margin-top: 6px;
@@ -51,22 +59,18 @@ body {
   text-overflow: ellipsis;
 }
 
-.chat-item:hover {
-  background: #374151;
-}
-
 .active {
   background: #2563eb;
 }
 
-/* MAIN CENTER FIX */
+/* MAIN AREA */
 .main {
-  max-width: 850px;
-  margin: auto;
+  margin-left: 260px;
+  width: calc(100% - 260px);
   padding: 20px;
 }
 
-/* TOP */
+/* TOPBAR */
 .topbar {
   display: flex;
   gap: 10px;
@@ -78,34 +82,35 @@ body {
   border: none;
   padding: 6px 10px;
   border-radius: 6px;
-  cursor: pointer;
 }
 
-.subtitle { color: #94a3b8; }
+/* TEXT */
+.subtitle { color: #94a3b8; margin-top: 5px; }
 .dev {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
   color: #38bdf8;
+  margin-bottom: 10px;
 }
 
 /* CHAT BOX */
 .chat-container {
-  margin-top: 10px;
   background: #111827;
   padding: 12px;
   border-radius: 12px;
+  margin-top: 10px;
 }
 
 /* CHAT AREA */
 #chat {
-  height: 420px;
+  height: 70vh;
   overflow-y: auto;
   background: #0b1220;
-  border-radius: 10px;
   padding: 10px;
+  border-radius: 10px;
 }
 
-/* INPUT BAR FIX (NOT TOO LONG) */
+/* INPUT FIX (NOT STRETCHED) */
 .input-bar {
   display: flex;
   gap: 8px;
@@ -133,7 +138,7 @@ button {
 .user { color: #60a5fa; margin: 6px 0; }
 .ai { color: #34d399; margin: 6px 0; }
 
-/* OPTIONS MENU */
+/* MENU */
 .menu {
   position: fixed;
   top: 40%;
@@ -145,7 +150,31 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  z-index: 50;
+  z-index: 20;
 }
 
 .hidden { display: none; }
+
+/* ========================= */
+/* 📱 MOBILE RESPONSIVE FIX */
+/* ========================= */
+@media (max-width: 768px) {
+
+  .sidebar {
+    left: -260px;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+    padding: 15px;
+  }
+
+  #chat {
+    height: 60vh;
+  }
+}
