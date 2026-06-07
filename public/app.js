@@ -1,3 +1,4 @@
+let deferredPrompt;
 let currentChatId = null;
 let selectedChatId = null;
 let pressTimer = null;
@@ -311,3 +312,25 @@ function init() {
 }
 
 init();
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn = document.getElementById("installBtn");
+
+  if (btn) {
+    btn.style.display = "block";
+
+    btn.addEventListener("click", async () => {
+      deferredPrompt.prompt();
+
+      const choice = await deferredPrompt.userChoice;
+
+      if (choice.outcome === "accepted") {
+        console.log("User installed app");
+      }
+
+      deferredPrompt = null;
+    });
+  }
+});
