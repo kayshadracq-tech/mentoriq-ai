@@ -297,8 +297,17 @@ function init() {
   const chats = getChats();
 
   if (chats.length > 0) {
-    currentChatId = chats[chats.length - 1].id;
+  const lastChatId = localStorage.getItem("lastChatId");
+
+  const exists = chats.find(c => c.id == lastChatId);
+
+  if (exists) {
+    currentChatId = exists.id;
   } else {
+    currentChatId = chats[chats.length - 1].id;
+  }
+}
+  else {
     const id = Date.now();
 
     chats.push({
