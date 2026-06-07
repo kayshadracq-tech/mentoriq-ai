@@ -111,8 +111,8 @@ body {
 /* INSTALL BUTTON */
 .install-btn {
   position: fixed;
-  top: 34px;   /* 👈 pushes it down cleanly */
-  right: 10px;
+  top: 29px;   
+  right: 9px;
 
   padding: 5px 8px;
   font-size: 11px;
