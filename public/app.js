@@ -190,6 +190,10 @@ function updatePlaceholder() {
   }
 }
 
+
+function formatText(text) {
+  return text.replace(/\n/g, "<br>");
+}
 /* MESSAGES */
 function renderMessages() {
   const chats = getChats();
@@ -209,7 +213,7 @@ function renderMessages() {
     box.innerHTML += `
       <div class="msg ${isUser ? "user-msg" : "ai-msg"}">
         <div class="bubble">
-          ${m.text}
+          ${formatText(m.text)}
         </div>
       </div>
     `;
