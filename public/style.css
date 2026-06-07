@@ -108,6 +108,25 @@ body {
   color: #94a3b8;
 }
 
+/* INSTALL BUTTON */
+.install-btn {
+  position: fixed;
+  top: 70px;
+  right: 15px;
+
+  padding: 10px 14px;
+  border-radius: 8px;
+
+  background: #111;
+  color: white;
+  border: none;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  z-index: 9999;
+}
+
 /* CHAT BOX */
 .chat-box {
   width: 100%;
