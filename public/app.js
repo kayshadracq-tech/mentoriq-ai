@@ -328,9 +328,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   btn.addEventListener("click", async () => {
     if (!deferredPrompt) {
-      alert("Install not available yet. Open in Chrome.");
-      return;
-    }
+  showGuide();
+  return;
+}
 
     deferredPrompt.prompt();
 
@@ -346,3 +346,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 document.getElementById("installBtn").style.display = "block";
+
+
+function showGuide() {
+  document.getElementById("installGuide").style.display = "flex";
+}
+
+function closeGuide() {
+  document.getElementById("installGuide").style.display = "none";
+}
+
