@@ -312,22 +312,18 @@ function init() {
 }
 
 init();
-let deferredPrompt = null;
-
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
   const btn = document.getElementById("installBtn");
-  if (btn) {
-    btn.style.display = "block";
-  }
-});
+  if (!btn) return;
 
+  btn.style.display = "block";
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("installBtn");
-
   if (!btn) return;
 
   btn.addEventListener("click", async () => {
