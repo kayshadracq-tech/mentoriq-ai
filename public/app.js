@@ -50,6 +50,7 @@ function renderChats() {
     /* CLICK */
 div.onclick = () => {
   currentChatId = c.id;
+  localStorage.setItem("lastChatId", c.id);
   renderMessages();
   updatePlaceholder();
   closeSidebar();
