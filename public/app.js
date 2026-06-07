@@ -312,25 +312,38 @@ function init() {
 }
 
 init();
+let deferredPrompt = null;
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
   const btn = document.getElementById("installBtn");
-
   if (btn) {
     btn.style.display = "block";
-
-    btn.addEventListener("click", async () => {
-      deferredPrompt.prompt();
-
-      const choice = await deferredPrompt.userChoice;
-
-      if (choice.outcome === "accepted") {
-        console.log("User installed app");
-      }
-
-      deferredPrompt = null;
-    });
   }
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("installBtn");
+
+  if (!btn) return;
+
+  btn.addEventListener("click", async () => {
+    if (!deferredPrompt) {
+      alert("Install not available yet. Open in Chrome.");
+      return;
+    }
+
+    deferredPrompt.prompt();
+
+    const choice = await deferredPrompt.userChoice;
+
+    if (choice.outcome === "accepted") {
+      console.log("App installed");
+    }
+
+    deferredPrompt = null;
+  });
 });
