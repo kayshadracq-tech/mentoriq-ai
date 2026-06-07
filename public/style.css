@@ -111,10 +111,8 @@ body {
 /* INSTALL BUTTON */
 .install-btn {
   position: fixed;
-  top: 2px;
+  top: 45px;   /* 👈 pushes it down cleanly */
   right: 10px;
-
-  transform: translateY(100%);
 
   padding: 5px 8px;
   font-size: 11px;
@@ -123,6 +121,7 @@ body {
 
   background: #111;
   color: white;
+  border: 1px solid #334155;
 
   z-index: 9999;
 }
