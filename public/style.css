@@ -111,17 +111,16 @@ body {
 /* INSTALL BUTTON */
 .install-btn {
   position: fixed;
-  top: 12px;
+  top: 5px;      /* move higher */
   right: 10px;
 
-  padding: 5px 10px;
+  padding: 5px 8px;
   font-size: 11px;
 
   border-radius: 20px;
 
-  background: #0f172a;
+  background: #111;
   color: white;
-
   border: 1px solid #334155;
 
   z-index: 9999;
