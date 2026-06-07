@@ -109,8 +109,10 @@ body {
 }
 
 /* INSTALL BUTTON */
-.install-btn {
-  margin-left: auto;
+install-btn {
+  position: fixed;
+  top: 45px;
+  right: 10px;
 
   padding: 5px 10px;
   font-size: 11px;
@@ -121,8 +123,9 @@ body {
   color: white;
   border: 1px solid #334155;
 
-  transform: translateY(-3px);
+  z-index: 9999;
 }
+
 /* CHAT BOX */
 .chat-box {
   width: 100%;
