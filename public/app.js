@@ -343,3 +343,6 @@ document.addEventListener("DOMContentLoaded", () => {
     deferredPrompt = null;
   });
 });
+
+
+document.getElementById("installBtn").style.display = "block";
