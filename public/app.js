@@ -248,6 +248,12 @@ async function send() {
   renderMessages();
 
   input.value = "";
+  const msg = document.getElementById("msg");
+
+msg.addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = Math.min(this.scrollHeight, 160) + "px";
+});
 
   const res = await fetch("/chat", {
     method: "POST",
