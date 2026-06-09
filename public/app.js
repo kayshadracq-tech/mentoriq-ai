@@ -57,6 +57,7 @@ div.onclick = () => {
   renderMessages();
   updatePlaceholder();
   closeSidebar();
+};
 
     /* LONG PRESS */
     div.onmousedown = (e) => startPress(e, c.id);
@@ -360,8 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
-document.getElementById("installBtn").style.display = "block";
 
 
 function showGuide() {
