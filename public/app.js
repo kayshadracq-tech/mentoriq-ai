@@ -295,21 +295,29 @@ document.addEventListener("DOMContentLoaded", () => {
 /* INIT */
 function init() {
   const chats = getChats();
+  const isFirstLoad = !sessionStorage.getItem("appSessionStarted");
+
+  if (isFirstLoad) {
+  // FIRST TIME OPEN (shared link / new tab / direct launch)
+  sessionStorage.setItem("appSessionStarted", "true");
+
+  currentChatId = null;
+  localStorage.removeItem("lastChatId");
+} 
+else {
+  // NORMAL REFRESH INSIDE APP (IMPORTANT: preserve chat)
 
   if (chats.length > 0) {
-  const lastChatId = localStorage.getItem("lastChatId");
+    const lastChatId = localStorage.getItem("lastChatId");
 
-  const exists = chats.find(c => c.id == lastChatId);
+    const exists = chats.find(c => c.id == lastChatId);
 
-  if (document.referrer) {
-  currentChatId = null;
-} else if (exists) {
-  currentChatId = exists.id;
-} else {
-  currentChatId = chats[chats.length - 1].id;
-}
-}
-  else {
+    if (exists) {
+      currentChatId = exists.id;
+    } else {
+      currentChatId = chats[chats.length - 1].id;
+    }
+  } else {
     const id = Date.now();
 
     chats.push({
@@ -322,7 +330,7 @@ function init() {
 
     currentChatId = id;
   }
-
+}
   renderChats();
   renderMessages();
 }
