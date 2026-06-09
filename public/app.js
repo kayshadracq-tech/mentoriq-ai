@@ -27,6 +27,7 @@ function newChat() {
   saveChats(chats);
 
   currentChatId = id;
+  localStorage.setItem("lastChatId", id);
 
   renderChats();
   renderMessages();
