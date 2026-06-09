@@ -301,11 +301,13 @@ function init() {
 
   const exists = chats.find(c => c.id == lastChatId);
 
-  if (exists) {
-    currentChatId = exists.id;
-  } else {
-    currentChatId = chats[chats.length - 1].id;
-  }
+  if (document.referrer) {
+  currentChatId = null;
+} else if (exists) {
+  currentChatId = exists.id;
+} else {
+  currentChatId = chats[chats.length - 1].id;
+}
 }
   else {
     const id = Date.now();
