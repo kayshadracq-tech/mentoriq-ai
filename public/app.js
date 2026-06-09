@@ -249,7 +249,7 @@ async function send() {
   saveChats(chats);
   renderChats();
   renderMessages();
-  localStorage.setItem("lastChatId", id);
+  localStorage.setItem("lastChatId", currentChatId);
 
   input.value = "";
 
