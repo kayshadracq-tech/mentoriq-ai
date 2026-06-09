@@ -27,12 +27,10 @@ function newChat() {
   saveChats(chats);
 
   currentChatId = id;
-  localStorage.setItem("lastChatId", id);
-  updateLastActiveTime();
-  
 
   renderChats();
   renderMessages();
+
   closeSidebar();
   updatePlaceholder();
 }
@@ -51,7 +49,6 @@ function renderChats() {
 
     /* CLICK */
 div.onclick = () => {
-  updateLastActiveTime();
   currentChatId = c.id;
   localStorage.setItem("lastChatId", c.id);
   renderMessages();
@@ -163,10 +160,9 @@ function deleteChat(e) {
   saveChats(chats);
 
   if (currentChatId === selectedChatId) {
-  currentChatId = null;
-  localStorage.removeItem("lastChatId");
-  document.getElementById("chat").innerHTML = "";
-    }
+    currentChatId = null;
+    document.getElementById("chat").innerHTML = "";
+  }
 
   renderChats();
   hideMenu();
@@ -250,7 +246,6 @@ async function send() {
   saveChats(chats);
   renderChats();
   renderMessages();
-  updateLastActiveTime();
 
   input.value = "";
 
@@ -301,27 +296,29 @@ document.addEventListener("DOMContentLoaded", () => {
 function init() {
   const chats = getChats();
 
-  const lastTime = localStorage.getItem("lastActiveTime");
-  const now = Date.now();
+  if (chats.length > 0) {
+  const lastChatId = localStorage.getItem("lastChatId");
 
-  const expired = !lastTime || (now - lastTime > 15 * 60 * 1000);
+  const exists = chats.find(c => c.id == lastChatId);
 
-  // 🧠 ALWAYS start fresh if:
-  // - coming from link (refresh/open)
-  // - OR 15 min inactive
-  if (expired) {
-    currentChatId = null;
-    localStorage.removeItem("lastChatId");
+  if (exists) {
+    currentChatId = exists.id;
   } else {
-    const lastChatId = localStorage.getItem("lastChatId");
+    currentChatId = chats[chats.length - 1].id;
+  }
+}
+  else {
+    const id = Date.now();
 
-    const exists = chats.find(c => c.id == lastChatId);
+    chats.push({
+      id,
+      title: "New Chat",
+      messages: []
+    });
 
-    if (exists) {
-      currentChatId = exists.id;
-    } else {
-      currentChatId = null;
-    }
+    saveChats(chats);
+
+    currentChatId = id;
   }
 
   renderChats();
@@ -362,6 +359,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+document.getElementById("installBtn").style.display = "block";
+
 
 function showGuide() {
   document.getElementById("installGuide").style.display = "flex";
@@ -369,8 +368,4 @@ function showGuide() {
 
 function closeGuide() {
   document.getElementById("installGuide").style.display = "none";
-}
-
-function updateLastActiveTime() {
-  localStorage.setItem("lastActiveTime", Date.now());
 }
