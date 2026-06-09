@@ -160,9 +160,10 @@ function deleteChat(e) {
   saveChats(chats);
 
   if (currentChatId === selectedChatId) {
-    currentChatId = null;
-    document.getElementById("chat").innerHTML = "";
-  }
+  currentChatId = null;
+  localStorage.removeItem("lastChatId");
+  document.getElementById("chat").innerHTML = "";
+    }
 
   renderChats();
   hideMenu();
@@ -308,18 +309,8 @@ function init() {
   }
 }
   else {
-    const id = Date.now();
-
-    chats.push({
-      id,
-      title: "New Chat",
-      messages: []
-    });
-
-    saveChats(chats);
-
-    currentChatId = id;
-  }
+  currentChatId = null;
+}
 
   renderChats();
   renderMessages();
