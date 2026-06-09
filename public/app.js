@@ -204,12 +204,9 @@ function renderMessages() {
   box.innerHTML = "";
 
   if (!chat) {
-  // Always show empty UI for fresh chat
-  const box = document.getElementById("chat");
-  box.innerHTML = "";
-  updatePlaceholder();
-  return;
-}
+    updatePlaceholder();
+    return;
+  }
 
   chat.messages.forEach(m => {
     const isUser = m.role === "user";
@@ -249,7 +246,6 @@ async function send() {
   saveChats(chats);
   renderChats();
   renderMessages();
-  localStorage.setItem("lastChatId", currentChatId);
 
   input.value = "";
 
@@ -300,30 +296,29 @@ document.addEventListener("DOMContentLoaded", () => {
 function init() {
   const chats = getChats();
 
-  const lastTime = localStorage.getItem("lastActiveTime");
-  const now = Date.now();
+  if (chats.length > 0) {
+  const lastChatId = localStorage.getItem("lastChatId");
 
-  const expired = !lastTime || (now - lastTime > 15 * 60 * 1000);
+  const exists = chats.find(c => c.id == lastChatId);
 
-  // Detect if page was opened fresh (hard refresh or external link)
-  const isFreshOpen = !document.referrer || document.referrer === "";
-
-  // ❗ RULE:
-  // - Fresh open OR expired session => start NEW chat
-  // - Otherwise restore last chat (refresh inside app)
-  if (isFreshOpen || expired) {
-    currentChatId = null;
-    localStorage.removeItem("lastChatId");
+  if (exists) {
+    currentChatId = exists.id;
   } else {
-    const lastChatId = localStorage.getItem("lastChatId");
+    currentChatId = chats[chats.length - 1].id;
+  }
+}
+  else {
+    const id = Date.now();
 
-    const exists = chats.find(c => c.id == lastChatId);
+    chats.push({
+      id,
+      title: "New Chat",
+      messages: []
+    });
 
-    if (exists) {
-      currentChatId = exists.id;
-    } else {
-      currentChatId = null;
-    }
+    saveChats(chats);
+
+    currentChatId = id;
   }
 
   renderChats();
@@ -374,3 +369,4 @@ function showGuide() {
 function closeGuide() {
   document.getElementById("installGuide").style.display = "none";
 }
+
