@@ -165,22 +165,6 @@ body {
   padding-top: 10px;
 }
 
-input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-}
-
-button {
-  padding: 10px 12px;
-  border: none;
-  border-radius: 6px;
-  background: #38bdf8;
-  cursor: pointer;
-}
-
 #msg {
   flex: 1;
   padding: 10px;
@@ -191,6 +175,14 @@ button {
   overflow-y: auto;
   max-height: 160px; /* ~7 lines */
   line-height: 1.4;
+}
+
+button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #38bdf8;
+  cursor: pointer;
 }
 
 /* MOBILE FIX */
