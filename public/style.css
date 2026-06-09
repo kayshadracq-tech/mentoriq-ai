@@ -130,7 +130,7 @@ body {
 /* CHAT BOX */
 .chat-box {
   width: 100%;
-  max-width: 700px;
+  max-width: max-width: min(900px, 95vw);
 
   background: #1e293b;
   border: 1px solid #334155;
@@ -181,6 +181,17 @@ button {
   cursor: pointer;
 }
 
+#msg {
+  flex: 1;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow-y: auto;
+  max-height: 160px; /* ~7 lines */
+  line-height: 1.4;
+}
 
 /* MOBILE FIX */
 @media (max-width: 600px) {
