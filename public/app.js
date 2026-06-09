@@ -28,10 +28,11 @@ function newChat() {
 
   currentChatId = id;
   localStorage.setItem("lastChatId", id);
+  updateLastActiveTime();
+  
 
   renderChats();
   renderMessages();
-
   closeSidebar();
   updatePlaceholder();
 }
@@ -50,12 +51,12 @@ function renderChats() {
 
     /* CLICK */
 div.onclick = () => {
+  updateLastActiveTime();
   currentChatId = c.id;
   localStorage.setItem("lastChatId", c.id);
   renderMessages();
   updatePlaceholder();
   closeSidebar();
-};
 
     /* LONG PRESS */
     div.onmousedown = (e) => startPress(e, c.id);
@@ -248,6 +249,7 @@ async function send() {
   saveChats(chats);
   renderChats();
   renderMessages();
+  updateLastActiveTime();
 
   input.value = "";
 
@@ -298,20 +300,28 @@ document.addEventListener("DOMContentLoaded", () => {
 function init() {
   const chats = getChats();
 
-  if (chats.length > 0) {
-  const lastChatId = localStorage.getItem("lastChatId");
+  const lastTime = localStorage.getItem("lastActiveTime");
+  const now = Date.now();
 
-  const exists = chats.find(c => c.id == lastChatId);
+  const expired = !lastTime || (now - lastTime > 15 * 60 * 1000);
 
-  if (exists) {
-    currentChatId = exists.id;
+  // 🧠 ALWAYS start fresh if:
+  // - coming from link (refresh/open)
+  // - OR 15 min inactive
+  if (expired) {
+    currentChatId = null;
+    localStorage.removeItem("lastChatId");
   } else {
-    currentChatId = chats[chats.length - 1].id;
+    const lastChatId = localStorage.getItem("lastChatId");
+
+    const exists = chats.find(c => c.id == lastChatId);
+
+    if (exists) {
+      currentChatId = exists.id;
+    } else {
+      currentChatId = null;
+    }
   }
-}
-  else {
-  currentChatId = null;
-}
 
   renderChats();
   renderMessages();
@@ -362,3 +372,6 @@ function closeGuide() {
   document.getElementById("installGuide").style.display = "none";
 }
 
+function updateLastActiveTime() {
+  localStorage.setItem("lastActiveTime", Date.now());
+}
