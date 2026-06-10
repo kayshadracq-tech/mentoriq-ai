@@ -291,3 +291,11 @@ p {
   z-index: 9999;
   cursor: pointer;
   }
+
+.main-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 10px 0;
+  color: white;
+  }
