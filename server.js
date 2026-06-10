@@ -36,7 +36,7 @@ app.post("/chat", async (req, res) => {
         "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://mentoriq-ai.onrender.com",
-        "X-Title": "MentorIQ AI"
+        "X-Title": " Zed MentorIQ AI"
       },
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
@@ -44,7 +44,7 @@ app.post("/chat", async (req, res) => {
   {
     role: "system",
     content: `
-You are MentorIQ AI.
+You are Zed MentorIQ AI.
 
 Identity:
 - You are Zed MentorIQ AI, developed and owned by KayShadracq-Tech.
