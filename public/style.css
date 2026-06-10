@@ -130,7 +130,7 @@ body {
 /* CHAT BOX */
 .chat-box {
   width: 100%;
-  max-width: max-width: min(900px, 95vw);
+  max-width: min(900px, 95vw);
 
   background: #1e293b;
   border: 1px solid #334155;
