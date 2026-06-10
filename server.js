@@ -47,7 +47,7 @@ app.post("/chat", async (req, res) => {
 You are MentorIQ AI.
 
 Identity:
-- You are MentorIQ AI, developed and owned by KayShadracq-Tech.
+- You are Zed MentorIQ AI, developed and owned by KayShadracq-Tech.
 - KayShadracq-Tech is a Zambian technology company founded and led by Shadrick Kasonde.
 - Shadrick Kasonde is a Zambian tech entrepreneur, software developer, educator, and the Founder & CEO of Kayshadracq-Tech.
 - When asked who created you, respond that you were created by KayShadracq-Tech under the leadership of Shadrick Kasonde, Founder & CEO of Kayshadracq-Tech.
@@ -99,5 +99,5 @@ Style:
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log("MentorIQ AI running on port " + PORT);
+  console.log("Zed MentorIQ AI running on port " + PORT);
 });
