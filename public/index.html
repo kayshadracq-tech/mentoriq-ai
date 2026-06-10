@@ -60,20 +60,21 @@
 <div class="main">
 
   <div class="topbar">
-    <button class="menu-btn" onclick="toggleSidebar()">☰ </button>
-  
-    <h1>Zed MentorIQ AI</h1>
-<p class="subtitle">Ask questions. Learn faster. Anytime.</p>
-  <br>
-<p class="dev">Developed by <b>KayShadracq-Tech</b> • Zed MentorIQ AI</p>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <h3>Zed MentorIQ AI</h3>
+  </div>
 
-<button id="installBtn" class="install-btn" style="display:none;">
-  Install App
-</button>
+  <h1 class="main-title">Zed MentorIQ AI</h1>
+  <p class="subtitle">Ask questions. Learn faster. Anytime.</p>
+  <p class="dev">Developed by <b>KayShadracq-Tech</b> • Zed MentorIQ AI</p>
 
- <button class="floating-newchat" onclick="newChat()">
-  + New Chat
- </button> 
+  <button id="installBtn" class="install-btn" style="display:none;">
+    Install App
+  </button>
+
+  <button class="floating-newchat" onclick="newChat()">
+    + New Chat
+  </button>
 
   <div class="chat-box">
     <div id="chat"></div>
@@ -83,9 +84,11 @@
       <button onclick="send()">Send</button>
     </div>
   </div>
-<br>
-  
+
+  <br>
+
 </div>
+<!-- ✅ FIX: properly close .main here -->
 
 <!-- OPTIONS MENU -->
 <div id="menu" class="menu">
@@ -110,5 +113,4 @@
 
 <script src="app.js"></script>
 
-</body>
-</html>
+    </body>
