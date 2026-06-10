@@ -36,7 +36,7 @@ app.post("/chat", async (req, res) => {
         "Authorization": `Bearer ${API_KEY}`,
         "Content-Type": "application/json",
         "HTTP-Referer": "https://mentoriq-ai.onrender.com",
-        "X-Title": " Zed MentorIQ AI"
+        "X-Title": "Zed MentorIQ AI"
       },
       body: JSON.stringify({
         model: "openai/gpt-4o-mini",
