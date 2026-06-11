@@ -1,6 +1,6 @@
-# MentorIQ AI 🤖
+# Zed MentorIQ AI 🤖
 
-MentorIQ AI is a free online AI chatbot that acts as a digital learning mentor.
+Zed MentorIQ AI is a free online AI chatbot that acts as a digital learning mentor.
 
 It helps users:
 - Ask questions
