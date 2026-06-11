@@ -193,7 +193,7 @@ function updatePlaceholder() {
 
 
 function formatText(text) {
-  return text.replace(/\n/g, "<br>");
+  return marked.parse(text);
 }
 /* MESSAGES */
 function renderMessages() {
