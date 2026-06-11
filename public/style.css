@@ -112,6 +112,7 @@ body {
 /* INSTALL BUTTON */
 .install-btn {
   position: fixed;
+  display: none;
   top: 19px;   
   right: 9px;
 
