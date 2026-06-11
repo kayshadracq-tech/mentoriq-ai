@@ -342,6 +342,18 @@ else {
 }
 
 init();
+function checkInstallAvailability() {
+  const btn = document.getElementById("installBtn");
+  if (!btn) return;
+
+  // show button anyway after load
+  setTimeout(() => {
+    btn.style.display = "block";
+  }, 1200);
+}
+
+checkInstallAvailability();
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
