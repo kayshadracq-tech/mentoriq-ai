@@ -311,15 +311,20 @@ p {
   cursor: pointer;
   font-weight: bold;
   color: #38bdf8;
+  list-style: none;
+}
+
+.about-dropdown summary::-webkit-details-marker {
+  display: none;
 }
 
 .about-content {
   padding: 8px 0;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
   color: #cbd5e1;
 }
 
 .about-content p {
-  margin: 4px 0;
+  margin: 6px 0;
 }
