@@ -231,6 +231,10 @@ button {
   border: 1px solid #334155;
 }
 
+.install-guide {
+  display: none;
+}
+
 /* =========================
    NEW CHAT BUTTON
 ========================= */
