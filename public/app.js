@@ -127,7 +127,7 @@ function hideMenu() {
 }
 
 /* CHAT ACTIONS */
-window.openChat = function () {
+window.openChat = function (e) {
   if (e) e.stopPropagation();
 
   currentChatId = selectedChatId;
@@ -135,7 +135,7 @@ window.openChat = function () {
   hideMenu();
 }
 
-window.renameChat = function () {
+window.renameChat = function (e) {
   if (e) e.stopPropagation();
 
   const chats = getChats();
@@ -151,7 +151,7 @@ window.renameChat = function () {
   hideMenu();
 }
 
-window.deleteChat = function () {
+window.deleteChat = function (e) {
   if (e) e.stopPropagation();
 
   let chats = getChats();
@@ -255,7 +255,7 @@ msg.addEventListener("input", function () {
   this.style.height = Math.min(this.scrollHeight, 160) + "px";
 });
 
-  const res = await fetch("/chat", {
+  const res = await fetch("https://mentoriq-ai.onrender.com/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message: text })
