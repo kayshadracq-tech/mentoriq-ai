@@ -342,59 +342,32 @@ else {
 }
 
 init();
-function checkInstallAvailability() {
-  const btn = document.getElementById("installBtn");
-  if (!btn) return;
 
-  // show button anyway after load
-  setTimeout(() => {
-    btn.style.display = "block";
-  }, 1200);
-}
 
-checkInstallAvailability();
+let deferredPrompt = null;
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  const btn = document.getElementById("installBtn");
-  if (!btn) return;
-
-  btn.style.display = "block";
-});
-
+/* Wait for DOM safely ONCE */
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("installBtn");
-  if (!btn) return;
+  const installBtn = document.getElementById("installBtn");
 
-  btn.addEventListener("click", async () => {
+  if (!installBtn) return;
+
+  /* Show button only when install is actually available */
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = "block";
+  });
+
+  /* Click install */
+  installBtn.addEventListener("click", async () => {
     if (!deferredPrompt) {
-  showGuide();
-  return;
-}
-
-    deferredPrompt.prompt();
-
-    const choice = await deferredPrompt.userChoice;
-
-    if (choice.outcome === "accepted") {
-      console.log("App installed");
+      showGuide();
+      return;
     }
 
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
     deferredPrompt = null;
   });
 });
-
-
-document.getElementById("installBtn").style.display = "block";
-
-
-function showGuide() {
-  document.getElementById("installGuide").style.display = "flex";
-}
-
-function closeGuide() {
-  document.getElementById("installGuide").style.display = "none";
-}
-
