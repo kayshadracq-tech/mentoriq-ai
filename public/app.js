@@ -369,6 +369,9 @@ document.addEventListener("DOMContentLoaded", () => {
     await deferredPrompt.userChoice;
     deferredPrompt = null;
   });
+  setTimeout(() => {
+  installBtn.style.display = "block";
+}, 3000);
 });
 
 
