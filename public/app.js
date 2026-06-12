@@ -13,7 +13,7 @@ function saveChats(chats) {
 }
 
 /* CREATE CHAT */
-function newChat() {
+window.newChat = function () {
   const chats = getChats();
 
   const id = Date.now();
@@ -127,7 +127,7 @@ function hideMenu() {
 }
 
 /* CHAT ACTIONS */
-function openChat(e) {
+window.openChat = function () {
   if (e) e.stopPropagation();
 
   currentChatId = selectedChatId;
@@ -135,7 +135,7 @@ function openChat(e) {
   hideMenu();
 }
 
-function renameChat(e) {
+window.renameChat = function () {
   if (e) e.stopPropagation();
 
   const chats = getChats();
@@ -151,7 +151,7 @@ function renameChat(e) {
   hideMenu();
 }
 
-function deleteChat(e) {
+window.deleteChat = function () {
   if (e) e.stopPropagation();
 
   let chats = getChats();
@@ -227,7 +227,7 @@ function renderMessages() {
 }
 
 /* SEND */
-async function send() {
+window.send = async function () {
   const input = document.getElementById("msg");
   const text = input.value.trim();
   if (!text) return;
@@ -271,12 +271,12 @@ msg.addEventListener("input", function () {
 }
 
 /* SIDEBAR CONTROL (FIXED) */
-function toggleSidebar() {
+window.toggleSidebar = function () {
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
 }
 
-function closeSidebar() {
+window.closeSidebar = function () {
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
 }
