@@ -231,8 +231,27 @@ button {
   border: 1px solid #334155;
 }
 
+/* =========================
+   INSTALL GUIDE
+========================= */
+
 .install-guide {
   display: none;
+
+  position: fixed;
+  top: 60px;
+  right: 10px;
+
+  width: 220px;
+
+  background: #111827;
+  color: white;
+
+  padding: 12px;
+  border-radius: 10px;
+
+  z-index: 1000;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 /* =========================
