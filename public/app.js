@@ -344,7 +344,6 @@ else {
 init();
 
 
-let deferredPrompt = null;
 
 /* Wait for DOM safely ONCE */
 document.addEventListener("DOMContentLoaded", () => {
@@ -371,3 +370,12 @@ document.addEventListener("DOMContentLoaded", () => {
     deferredPrompt = null;
   });
 });
+
+
+function showGuide() {
+  document.getElementById("installGuide").style.display = "block";
+}
+
+function closeGuide() {
+  document.getElementById("installGuide").style.display = "none";
+}
