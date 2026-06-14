@@ -193,8 +193,13 @@ function updatePlaceholder() {
 
 
 function formatText(text) {
+  marked.setOptions({
+    breaks: true
+  });
+
   return marked.parse(text);
 }
+
 /* MESSAGES */
 function renderMessages() {
   const chats = getChats();
