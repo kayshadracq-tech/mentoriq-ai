@@ -208,6 +208,10 @@ button {
   background: #1f2937;
 }
 
+.bubble p {
+  margin: 0 0 10px 0;
+   }
+
 /* =========================
    INSTALL BUTTON (FIX VISIBILITY)
 ========================= */
