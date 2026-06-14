@@ -205,20 +205,18 @@ button {
   background: #2563eb;
 }
 
-.ai-msg .bubble {
-  background: #1f2937;
-}
 
 .ai-msg {
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .ai-msg .bubble {
   background: #1f2937;
   max-width: 85%;
   width: fit-content;
-  line-height: 1.5;
+  line-height: 1.35;
   white-space: pre-wrap;
+  margin-right: auto;
 }
 
 .bubble p {
