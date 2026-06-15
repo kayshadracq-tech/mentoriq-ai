@@ -1,8 +1,10 @@
 {
   "name": "Zed MentorIQ AI",
   "short_name": "Zed MentorIQ",
+  "description": "AI-powered learning assistant for students, teachers, developers, and professionals.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "icons": [
