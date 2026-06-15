@@ -387,3 +387,16 @@ function showGuide() {
 function closeGuide() {
   document.getElementById("installGuide").style.display = "none";
 }
+
+
+/* =========================
+   SERVICE WORKER (ADD HERE)
+========================= */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch((err) => console.error("Service Worker error:", err));
+  });
+}
