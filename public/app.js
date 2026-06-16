@@ -570,14 +570,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const chatBox = document.getElementById("chat");
 
-    if (chatBox) {
-      const msg = document.createElement("div");
-      msg.className = "msg user-msg";
-      msg.innerHTML = `
-        <div class="bubble">
-          📎 Uploaded: ${file.name}
-        </div>
-      `;
+const msg = {
+  role: "user",
+  text: `📎 Uploaded: ${file.name}`
+};
+
+chat.messages.push(msg);
+saveChats(chats);
+renderMessages();
 
       chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
