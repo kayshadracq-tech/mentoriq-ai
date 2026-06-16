@@ -42,20 +42,23 @@ app.post("/chat", async (req, res) => {
 
 const aiMode = req.body.aiMode || {};
 
+const lower = message.toLowerCase();
+
 const isImageRequest =
   aiMode.generateImage ||
-  message.toLowerCase().includes("image of") ||
-  message.toLowerCase().includes("create image") ||
-  message.toLowerCase().includes("generate image") ||
-  message.toLowerCase().includes("draw");
+  lower.includes("image of") ||
+  lower.includes("create image") ||
+  lower.includes("generate image") ||
+  lower.includes("draw");
 
 const isEditRequest =
   aiMode.editImage ||
-  message.toLowerCase().includes("edit image") ||
-  message.toLowerCase().includes("modify image") ||
-  message.toLowerCase().includes("enhance image") ||
-  message.toLowerCase().includes("add watermark");
-    
+  lower.includes("edit image") ||
+  lower.includes("modify image") ||
+  lower.includes("enhance image") ||
+  lower.includes("change background") ||
+  (upload && lower.includes("edit")) ||
+  (upload && lower.includes("enhance"));
     
     if (message.length > 2000) {
       return res.json({
