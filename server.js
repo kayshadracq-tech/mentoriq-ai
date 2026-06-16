@@ -62,7 +62,7 @@ const chatMemory = [];
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
-
+    const upload = req.body.upload || null;
 
     if (!message || typeof message !== "string") {
       return res.json({
@@ -100,10 +100,22 @@ const isEditRequest =
     }
 
     // Store user message
-    chatMemory.push({
-      role: "user",
-      content: message
-    });
+    let userContent = message;
+
+if (upload) {
+  userContent += `
+
+Uploaded File:
+Name: ${upload.name}
+Type: ${upload.type}
+MimeType: ${upload.mimeType}
+`;
+}
+
+chatMemory.push({
+  role: "user",
+  content: userContent
+});
 
     if (chatMemory.length > 12) {
       chatMemory.shift();
