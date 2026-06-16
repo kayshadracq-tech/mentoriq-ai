@@ -10,6 +10,27 @@ app.use(express.static("public"));
 const API_KEY = process.env.OPENROUTER_API_KEY;
 const URL = "https://openrouter.ai/api/v1/chat/completions";
 
+
+async function generateImage(prompt) {
+  const res = await fetch("https://api.openai.com/v1/images/generations", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "gpt-image-1",
+      prompt,
+      size: "1024x1024"
+    })
+  });
+
+  const data = await res.json();
+
+  return data?.data?.[0]?.url || null;
+}
+
+
 /**
  * SIMPLE MEMORY (per server session)
  * NOTE: resets when Render restarts (free tier limitation)
@@ -19,6 +40,16 @@ const chatMemory = [];
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
+
+    const aiMode = req.body.aiMode || {};
+
+const isImageRequest =
+  aiMode.generateImage ||
+  message.toLowerCase().includes("image of") ||
+  message.toLowerCase().includes("create image") ||
+  message.toLowerCase().includes("generate image") ||
+  message.toLowerCase().includes("draw");
+    
 
     if (!message || typeof message !== "string") {
       return res.json({
@@ -48,6 +79,17 @@ app.post("/chat", async (req, res) => {
       chatMemory.shift();
     }
 
+
+      if (isImageRequest) {
+  const imageUrl = await generateImage(message);
+
+  return res.json({
+    reply: "Image generated successfully.",
+    imageUrl
+  });
+}
+
+    
     const response = await fetch(URL, {
       method: "POST",
       headers: {
