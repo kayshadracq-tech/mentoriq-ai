@@ -79,23 +79,26 @@ const isEditRequest =
 
 if (upload) {
   if (upload.type === "image") {
+    // CLEAN STRUCTURED TAG (NO BULK TEXT, NO INSTRUCTIONS INSIDE USER MESSAGE)
     userContent += `
-User uploaded an IMAGE.
 
-Instruction:
-- Treat this as a visual image provided by the user.
-- Assume it contains visual content to analyze or edit.
-- Respond as an image assistant (describe, edit suggestions, enhancements).
+[UPLOAD_TYPE: IMAGE]
+[FILE_NAME: ${upload.name}]
+[MODE: IMAGE_ANALYSIS]
+
 `;
   } else {
     userContent += `
-Uploaded File:
-Name: ${upload.name}
-Type: ${upload.type}
-MimeType: ${upload.mimeType}
+
+[UPLOAD_TYPE: FILE]
+[FILE_NAME: ${upload.name}]
+[FILE_TYPE: ${upload.type}]
+[MIME: ${upload.mimeType}]
+
 `;
   }
 }
+    
 chatMemory.push({
   role: "user",
   content: userContent
