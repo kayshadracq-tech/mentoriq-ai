@@ -12,44 +12,14 @@ const URL = "https://openrouter.ai/api/v1/chat/completions";
 
 
 async function generateImage(prompt) {
-  const res = await fetch("https://api.openai.com/v1/images/generations", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${API_KEY}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "gpt-image-1",
-      prompt,
-      size: "1024x1024"
-    })
-  });
-  
-  const data = await res.json();
-
-  return data?.data?.[0]?.url || null;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
 }
 
 
 async function editImage(imageUrl, prompt) {
-  const res = await fetch("https://api.openai.com/v1/images/edits", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${API_KEY}`
-    },
-    body: (() => {
-      const form = new FormData();
+  const combinedPrompt = `${prompt} (based on existing image)`;
 
-      form.append("model", "gpt-image-1");
-      form.append("prompt", `${prompt}. Add subtle watermark: Zed MentorIQ AI`);
-      form.append("image", imageUrl);
-
-      return form;
-    })()
-  });
-
-  const data = await res.json();
-  return data?.data?.[0]?.url || null;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(combinedPrompt)}`;
 }
 
 
