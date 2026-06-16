@@ -217,12 +217,12 @@ function renderMessages() {
     const isUser = m.role === "user";
 
     box.innerHTML += `
-      <div class="msg ${isUser ? "user-msg" : "ai-msg"}">
-        <div class="bubble">
-          ${m.text}
-        </div>
-      </div>
-    `;
+  <div class="msg ${isUser ? "user-msg" : "ai-msg"}">
+    <div class="bubble">
+      ${formatText(m.text)}
+    </div>
+  </div>
+`;
   });
 
   box.scrollTop = box.scrollHeight;
