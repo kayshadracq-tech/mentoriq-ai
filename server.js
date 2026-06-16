@@ -53,12 +53,14 @@ const isImageRequest =
 
 const isEditRequest =
   aiMode.editImage ||
-  lower.includes("edit image") ||
-  lower.includes("modify image") ||
-  lower.includes("enhance image") ||
-  lower.includes("change background") ||
-  (upload && lower.includes("edit")) ||
-  (upload && lower.includes("enhance"));
+  lower.includes("edit") ||
+  lower.includes("enhance") ||
+  lower.includes("improve") ||
+  lower.includes("upscale") ||
+  lower.includes("sharpen") ||
+  lower.includes("polish") ||
+  lower.includes("make clearer") ||
+  lower.includes("increase quality");
     
     if (message.length > 2000) {
       return res.json({
@@ -104,8 +106,8 @@ chatMemory.push({
   });
 }
 
-    if (isEditRequest && req.body.imageUrl) {
-  const editedUrl = await editImage(req.body.imageUrl, message);
+    if (isEditRequest && upload) {
+  const editedUrl = await editImage(upload.data, message);
 
   return res.json({
     reply: "Image edited successfully.",
