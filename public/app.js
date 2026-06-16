@@ -219,7 +219,7 @@ function renderMessages() {
     box.innerHTML += `
       <div class="msg ${isUser ? "user-msg" : "ai-msg"}">
         <div class="bubble">
-          ${formatText(m.text)}
+          ${m.text}
         </div>
       </div>
     `;
@@ -568,9 +568,8 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("📁 FILE SELECTED:", file.name);
 
     /* =========================
-       SHOW UPLOADED FILE IN CHAT
+       CREATE CHAT IF NEEDED
     ========================= */
-
     if (!currentChatId) {
       window.newChat();
     }
@@ -580,21 +579,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!chat) return;
 
-    chat.messages.push({
-      role: "user",
-      text: `📎 Uploaded: ${file.name}`
-    });
+    /* =========================
+       STORE FILE MESSAGE (SAFE UI UPDATE)
+    ========================= */
+
+chat.messages.push({
+  role: "user",
+  text:
+    file.type.startsWith("image/")
+      ? `<img src="${URL.createObjectURL(file)}" style="max-width:200px;border-radius:10px;" />`
+      : `📎 Uploaded: ${file.name}`
+});
 
     saveChats(chats);
     renderMessages();
 
     const chatBox = document.getElementById("chat");
     if (chatBox) {
-      chatBox.scrollTop = chatBox.scrollHeight;
+      setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 50);
     }
 
     /* =========================
-       FILE READ
+       FILE READ FOR AI PROCESSING
     ========================= */
 
     const reader = new FileReader();
@@ -628,16 +636,16 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     /* =========================
-       READ FILE SAFELY
+       SAFE FILE READING
     ========================= */
 
-    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+    if (
+      file.type.startsWith("image/") ||
+      file.type.startsWith("video/")
+    ) {
       reader.readAsDataURL(file);
     } else {
       reader.readAsText(file);
     }
   });
 });
-
-
-
