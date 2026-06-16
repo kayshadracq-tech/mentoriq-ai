@@ -41,15 +41,6 @@ app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
 
-    const aiMode = req.body.aiMode || {};
-
-const isImageRequest =
-  aiMode.generateImage ||
-  message.toLowerCase().includes("image of") ||
-  message.toLowerCase().includes("create image") ||
-  message.toLowerCase().includes("generate image") ||
-  message.toLowerCase().includes("draw");
-    
 
     if (!message || typeof message !== "string") {
       return res.json({
@@ -57,6 +48,15 @@ const isImageRequest =
       });
     }
 
+const aiMode = req.body.aiMode || {};
+ const isImageRequest =
+  aiMode.generateImage ||
+  message.toLowerCase().includes("image of") ||
+  message.toLowerCase().includes("create image") ||
+  message.toLowerCase().includes("generate image") ||
+  message.toLowerCase().includes("draw");
+    
+    
     if (message.length > 2000) {
       return res.json({
         reply: "Message too long. Please shorten it."
