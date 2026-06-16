@@ -386,22 +386,30 @@ window.closeSidebar = function () {
   document.getElementById("overlay").classList.remove("show");
 }
 
-/* =========================
-   UPLOAD BUTTON TRIGGER
-   (Step 2B - REQUIRED FUNCTION)
+  /* =========================
+   UPLOAD BUTTON TRIGGER (FIXED + SAFE)
 ========================= */
-function openUpload() {
+
+window.openUpload = function () {
   const input = document.getElementById("fileInput");
 
-  // safety check so it won't crash if missing
-  if (!input) return;
+  if (!input) {
+    console.error("❌ fileInput not found");
+    return;
+  }
 
+  input.value = ""; // allow same file reselect
   input.click();
-}
+};
 
 
-    function forceResetUI() {
+/* =========================
+   FORCE UI RESET SAFELY
+========================= */
+
+function forceResetUI() {
   const menu = document.getElementById("menu");
+
   if (menu) {
     menu.style.display = "none";
     menu.style.visibility = "hidden";
@@ -411,50 +419,65 @@ function openUpload() {
   }
 }
 
+/* safe DOM boot */
 document.addEventListener("DOMContentLoaded", () => {
   forceResetUI();
   hideMenu();
 });
 
-/* INIT */
+
+/* =========================
+   MENU SAFETY FIX (GLOBAL GUARANTEE)
+========================= */
+
+function hideMenu() {
+  const menu = document.getElementById("menu");
+  if (!menu) return;
+
+  menu.style.display = "none";
+  menu.style.visibility = "hidden";
+  menu.style.opacity = "0";
+  menu.style.pointerEvents = "none";
+  menu.style.left = "0px";
+  menu.style.top = "0px";
+}
+
+
+/* =========================
+   INIT (UNCHANGED BUT SAFE)
+========================= */
+
 function init() {
   const chats = getChats();
   const isFirstLoad = !sessionStorage.getItem("appSessionStarted");
 
   if (isFirstLoad) {
-  // FIRST TIME OPEN (shared link / new tab / direct launch)
-  sessionStorage.setItem("appSessionStarted", "true");
+    sessionStorage.setItem("appSessionStarted", "true");
 
-  currentChatId = null;
-  localStorage.removeItem("lastChatId");
-} 
-else {
-  // NORMAL REFRESH INSIDE APP (IMPORTANT: preserve chat)
-
-  if (chats.length > 0) {
-    const lastChatId = localStorage.getItem("lastChatId");
-
-    const exists = chats.find(c => c.id == lastChatId);
-
-    if (exists) {
-      currentChatId = exists.id;
-    } else {
-      currentChatId = chats[chats.length - 1].id;
-    }
+    currentChatId = null;
+    localStorage.removeItem("lastChatId");
   } else {
-    const id = Date.now();
+    if (chats.length > 0) {
+      const lastChatId = localStorage.getItem("lastChatId");
+      const exists = chats.find(c => c.id == lastChatId);
 
-    chats.push({
-      id,
-      title: "New Chat",
-      messages: []
-    });
+      currentChatId = exists
+        ? exists.id
+        : chats[chats.length - 1].id;
+    } else {
+      const id = Date.now();
 
-    saveChats(chats);
+      chats.push({
+        id,
+        title: "New Chat",
+        messages: []
+      });
 
-    currentChatId = id;
+      saveChats(chats);
+      currentChatId = id;
+    }
   }
-}
+
   renderChats();
   renderMessages();
 }
@@ -462,21 +485,21 @@ else {
 init();
 
 
+/* =========================
+   INSTALL BUTTON (CLEANED)
+========================= */
 
-/* Wait for DOM safely ONCE */
 document.addEventListener("DOMContentLoaded", () => {
   const installBtn = document.getElementById("installBtn");
 
   if (!installBtn) return;
 
-  /* Show button only when install is actually available */
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
     deferredPrompt = e;
     installBtn.style.display = "block";
   });
 
-  /* Click install */
   installBtn.addEventListener("click", async () => {
     if (!deferredPrompt) {
       showGuide();
@@ -487,63 +510,82 @@ document.addEventListener("DOMContentLoaded", () => {
     await deferredPrompt.userChoice;
     deferredPrompt = null;
   });
+
   setTimeout(() => {
-  installBtn.style.display = "block";
-}, 3000);
+    installBtn.style.display = "block";
+  }, 2000);
 });
 
 
-function showGuide() {
-  document.getElementById("installGuide").style.display = "block";
-}
+/* =========================
+   INSTALL GUIDE FIX
+========================= */
 
-function closeGuide() {
-  document.getElementById("installGuide").style.display = "none";
-}
+window.showGuide = function () {
+  const guide = document.getElementById("installGuide");
+  if (guide) guide.style.display = "block";
+};
+
+window.closeGuide = function () {
+  const guide = document.getElementById("installGuide");
+  if (guide) guide.style.display = "none";
+};
 
 
 /* =========================
-   SERVICE WORKER (ADD HERE)
+   SERVICE WORKER (SAFE)
 ========================= */
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/sw.js")
-      .then(() => console.log("Service Worker registered"))
-      .catch((err) => console.error("Service Worker error:", err));
+      .then(() => console.log("✔ SW registered"))
+      .catch(err => console.error("SW error:", err));
   });
 }
 
 
 /* =========================
-   STEP 2C - FILE INPUT HANDLER
+   FILE UPLOAD HANDLER (FIXED CORE ISSUE)
 ========================= */
+
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("fileInput");
 
-  // Safety check
-  if (!input) return;
+  if (!input) {
+    console.error("❌ fileInput missing in HTML");
+    return;
+  }
 
-  input.addEventListener("change", async function (e) {
+  input.addEventListener("change", function (e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    console.log("📁 Selected file:", file);
+    console.log("📁 FILE SELECTED:", file.name);
 
-    // Show user what was selected
+    /* =========================
+       🔥 FIX: SHOW VISUAL FEEDBACK (YOU LOST THIS EARLIER)
+    ========================= */
+
     const chatBox = document.getElementById("chat");
 
     if (chatBox) {
-      chatBox.innerHTML += `
-        <div class="msg user-msg">
-          <div class="bubble">
-            📎 Uploaded: ${file.name}
-          </div>
+      const msg = document.createElement("div");
+      msg.className = "msg user-msg";
+      msg.innerHTML = `
+        <div class="bubble">
+          📎 Uploaded: ${file.name}
         </div>
       `;
 
+      chatBox.appendChild(msg);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
+
+    /* =========================
+       FILE READ
+    ========================= */
 
     const reader = new FileReader();
 
@@ -554,11 +596,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (file.type.startsWith("image/")) {
         fileType = "image";
-      } 
-      else if (file.type.startsWith("video/")) {
+      } else if (file.type.startsWith("video/")) {
         fileType = "video";
-      } 
-      else if (
+      } else if (
         file.type.includes("pdf") ||
         file.type.includes("word") ||
         file.type.includes("text")
@@ -574,16 +614,20 @@ document.addEventListener("DOMContentLoaded", () => {
         data: fileData
       };
 
-      console.log("✅ Upload stored for AI:", window.pendingUpload);
+      console.log("✅ Upload ready for AI:", window.pendingUpload);
     };
 
-    if (
-      file.type.startsWith("image/") ||
-      file.type.startsWith("video/")
-    ) {
+    /* =========================
+       READ FILE SAFELY
+    ========================= */
+
+    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
       reader.readAsDataURL(file);
     } else {
       reader.readAsText(file);
     }
   });
 });
+
+
+
