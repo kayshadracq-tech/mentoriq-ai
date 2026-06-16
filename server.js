@@ -78,15 +78,24 @@ const isEditRequest =
     let userContent = message;
 
 if (upload) {
-  userContent += `
+  if (upload.type === "image") {
+    userContent += `
+User uploaded an IMAGE.
 
+Instruction:
+- Treat this as a visual image provided by the user.
+- Assume it contains visual content to analyze or edit.
+- Respond as an image assistant (describe, edit suggestions, enhancements).
+`;
+  } else {
+    userContent += `
 Uploaded File:
 Name: ${upload.name}
 Type: ${upload.type}
 MimeType: ${upload.mimeType}
 `;
+  }
 }
-
 chatMemory.push({
   role: "user",
   content: userContent
