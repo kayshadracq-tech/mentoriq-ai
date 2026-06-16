@@ -231,7 +231,9 @@ function renderMessages() {
   updatePlaceholder();
 }
 
-/* SEND */
+
+
+  /* SEND */
 window.send = async function () {
   const input = document.getElementById("msg");
   const text = input.value.trim();
@@ -242,8 +244,65 @@ window.send = async function () {
   const chats = getChats();
   const chat = chats.find(c => c.id === currentChatId);
 
+  /* =========================
+     STEP 4 - AI IMAGE ENGINE DETECTOR
+  ========================= */
+
+  const lowerText = text.toLowerCase();
+
+  window.aiMode = {
+    generateImage:
+      lowerText.includes("generate image") ||
+      lowerText.includes("create image") ||
+      lowerText.includes("draw") ||
+      lowerText.includes("image of"),
+
+    editImage:
+      lowerText.includes("edit image") ||
+      lowerText.includes("modify") ||
+      lowerText.includes("enhance") ||
+      lowerText.includes("change background"),
+
+    signature: true
+  };
+
+  /* =========================
+     STEP 3 - AI UPLOAD ENGINE HOOK
+  ========================= */
+
+  let uploadPayload = null;
+
+  if (window.pendingUpload) {
+    const upload = window.pendingUpload;
+
+    let uploadNote = "";
+
+    if (upload.type === "image") {
+      uploadNote = "[User uploaded an image for AI analysis]";
+    } 
+    else if (upload.type === "video") {
+      uploadNote = "[User uploaded a video for AI processing]";
+    } 
+    else {
+      uploadNote = "[User uploaded a file/document]";
+    }
+
+    // Inject system context once
+    chat.messages.push({
+      role: "system",
+      text: uploadNote
+    });
+
+    uploadPayload = upload;
+
+    window.lastUpload = upload;
+    window.pendingUpload = null;
+  }
+
+  /* USER MESSAGE */
   chat.messages.push({ role: "user", text });
 
+  /* CHAT TITLE */
   if (chat.title === "New Chat") {
     chat.title = text.slice(0, 25);
   }
@@ -253,27 +312,68 @@ window.send = async function () {
   renderMessages();
 
   input.value = "";
+
   const msg = document.getElementById("msg");
 
-msg.addEventListener("input", function () {
-  this.style.height = "auto";
-  this.style.height = Math.min(this.scrollHeight, 160) + "px";
-});
+  msg.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 160) + "px";
+  });
+
+  /* =========================
+     FINAL UPLOAD SNAPSHOT
+  ========================= */
+
+  window.lastUpload = uploadPayload;
+
+  /* =========================
+     API REQUEST (STEP 4 ENHANCED)
+  ========================= */
 
   const res = await fetch("https://mentoriq-ai.onrender.com/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: text })
+    body: JSON.stringify({
+      message: text,
+      upload: uploadPayload,
+      aiMode: window.aiMode,
+      system: {
+        brand: "Zed MentorIQ AI",
+        signature: "Zed-AI-Render",
+        style: "educational-clean-modern"
+      }
+    })
   });
 
   const data = await res.json();
 
-  chat.messages.push({ role: "ai", text: data.reply });
+  /* =========================
+     RESPONSE HANDLER (TEXT + IMAGE READY)
+  ========================= */
+
+  if (data.imageUrl) {
+    chat.messages.push({
+      role: "ai",
+      text: data.reply || "Generated Image:"
+    });
+
+    chat.messages.push({
+      role: "ai",
+      text: `![Generated Image](${data.imageUrl})`
+    });
+  } 
+  else {
+    chat.messages.push({
+      role: "ai",
+      text: data.reply
+    });
+  }
 
   saveChats(chats);
   renderMessages();
   updatePlaceholder();
-}
+};
+   
 
 /* SIDEBAR CONTROL (FIXED) */
 window.toggleSidebar = function () {
@@ -284,6 +384,19 @@ window.toggleSidebar = function () {
 window.closeSidebar = function () {
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
+}
+
+/* =========================
+   UPLOAD BUTTON TRIGGER
+   (Step 2B - REQUIRED FUNCTION)
+========================= */
+function openUpload() {
+  const input = document.getElementById("fileInput");
+
+  // safety check so it won't crash if missing
+  if (!input) return;
+
+  input.click();
 }
 
 
@@ -400,3 +513,69 @@ if ("serviceWorker" in navigator) {
       .catch((err) => console.error("Service Worker error:", err));
   });
 }
+
+
+/* =========================
+   STEP 2C - FILE INPUT HANDLER
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("fileInput");
+
+  // Safety check (prevents crash if HTML not ready)
+  if (!input) return;
+
+  input.addEventListener("change", async function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    console.log("📁 Selected file:", file);
+
+    // STEP 2C.1 - Read file
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      const fileData = event.target.result;
+
+      console.log("📦 File data ready (base64 or text):", fileData);
+
+      // STEP 2C.2 - Classify file type
+      if (file.type.startsWith("image/")) {
+        console.log("🖼️ Image detected - ready for AI vision processing");
+
+        // Store globally for Step 3
+        window.pendingUpload = {
+          type: "image",
+          file,
+          data: fileData
+        };
+      } 
+      else if (file.type.startsWith("video/")) {
+        console.log("🎥 Video detected - ready for AI processing");
+
+        window.pendingUpload = {
+          type: "video",
+          file,
+          data: fileData
+        };
+      }
+      else {
+        console.log("📄 Document/text detected");
+
+        window.pendingUpload = {
+          type: "file",
+          file,
+          data: fileData
+        };
+      }
+    };
+
+    // STEP 2C.3 - Convert file
+    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+      reader.readAsDataURL(file); // images/videos
+    } else {
+      reader.readAsText(file); // documents
+    }
+  });
+});
+
+
