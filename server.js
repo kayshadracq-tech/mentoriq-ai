@@ -24,9 +24,31 @@ async function generateImage(prompt) {
       size: "1024x1024"
     })
   });
-
+  
   const data = await res.json();
 
+  return data?.data?.[0]?.url || null;
+}
+
+
+async function editImage(imageUrl, prompt) {
+  const res = await fetch("https://api.openai.com/v1/images/edits", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${API_KEY}`
+    },
+    body: (() => {
+      const form = new FormData();
+
+      form.append("model", "gpt-image-1");
+      form.append("prompt", `${prompt}. Add subtle watermark: Zed MentorIQ AI`);
+      form.append("image", imageUrl);
+
+      return form;
+    })()
+  });
+
+  const data = await res.json();
   return data?.data?.[0]?.url || null;
 }
 
@@ -49,12 +71,20 @@ app.post("/chat", async (req, res) => {
     }
 
 const aiMode = req.body.aiMode || {};
- const isImageRequest =
+
+const isImageRequest =
   aiMode.generateImage ||
   message.toLowerCase().includes("image of") ||
   message.toLowerCase().includes("create image") ||
   message.toLowerCase().includes("generate image") ||
   message.toLowerCase().includes("draw");
+
+const isEditRequest =
+  aiMode.editImage ||
+  message.toLowerCase().includes("edit image") ||
+  message.toLowerCase().includes("modify image") ||
+  message.toLowerCase().includes("enhance image") ||
+  message.toLowerCase().includes("add watermark");
     
     
     if (message.length > 2000) {
@@ -89,6 +119,14 @@ const aiMode = req.body.aiMode || {};
   });
 }
 
+    if (isEditRequest && req.body.imageUrl) {
+  const editedUrl = await editImage(req.body.imageUrl, message);
+
+  return res.json({
+    reply: "Image edited successfully.",
+    imageUrl: editedUrl
+  });
+  }
     
     const response = await fetch(URL, {
       method: "POST",
@@ -154,7 +192,10 @@ Style:
       chatMemory.shift();
     }
 
-    return res.json({ reply });
+    return res.json({
+  reply: `${reply}\n\n🤖 Zed MentorIQ AI`
+});
+    
 
   } catch (err) {
     return res.json({
