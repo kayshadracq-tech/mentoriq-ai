@@ -236,9 +236,12 @@ function renderMessages() {
   /* SEND */
 window.send = async function () {
   const input = document.getElementById("msg");
-  const text = input.value.trim();
-  if (!text) return;
+  let text = input.value.trim();
 
+if (!text && window.pendingUpload) {
+  text = "Analyze the uploaded image";
+}
+  if (!text && !window.pendingUpload) return;
   if (!currentChatId) newChat();
 
   const chats = getChats();
@@ -565,21 +568,28 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("📁 FILE SELECTED:", file.name);
 
     /* =========================
-       🔥 FIX: SHOW VISUAL FEEDBACK (YOU LOST THIS EARLIER)
+       SHOW UPLOADED FILE IN CHAT
     ========================= */
 
+    if (!currentChatId) {
+      window.newChat();
+    }
+
+    const chats = getChats();
+    const chat = chats.find(c => c.id === currentChatId);
+
+    if (!chat) return;
+
+    chat.messages.push({
+      role: "user",
+      text: `📎 Uploaded: ${file.name}`
+    });
+
+    saveChats(chats);
+    renderMessages();
+
     const chatBox = document.getElementById("chat");
-
-const msg = {
-  role: "user",
-  text: `📎 Uploaded: ${file.name}`
-};
-
-chat.messages.push(msg);
-saveChats(chats);
-renderMessages();
-
-      chatBox.appendChild(msg);
+    if (chatBox) {
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
