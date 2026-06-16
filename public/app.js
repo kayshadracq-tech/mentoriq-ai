@@ -521,7 +521,7 @@ if ("serviceWorker" in navigator) {
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("fileInput");
 
-  // Safety check (prevents crash if HTML not ready)
+  // Safety check
   if (!input) return;
 
   input.addEventListener("change", async function (e) {
@@ -530,52 +530,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("📁 Selected file:", file);
 
-    // STEP 2C.1 - Read file
+    // Show user what was selected
+    const chatBox = document.getElementById("chat");
+
+    if (chatBox) {
+      chatBox.innerHTML += `
+        <div class="msg user-msg">
+          <div class="bubble">
+            📎 Uploaded: ${file.name}
+          </div>
+        </div>
+      `;
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
     const reader = new FileReader();
 
     reader.onload = function (event) {
       const fileData = event.target.result;
 
-      console.log("📦 File data ready (base64 or text):", fileData);
+      let fileType = "file";
 
-      // STEP 2C.2 - Classify file type
       if (file.type.startsWith("image/")) {
-        console.log("🖼️ Image detected - ready for AI vision processing");
-
-        // Store globally for Step 3
-        window.pendingUpload = {
-          type: "image",
-          file,
-          data: fileData
-        };
+        fileType = "image";
       } 
       else if (file.type.startsWith("video/")) {
-        console.log("🎥 Video detected - ready for AI processing");
-
-        window.pendingUpload = {
-          type: "video",
-          file,
-          data: fileData
-        };
+        fileType = "video";
+      } 
+      else if (
+        file.type.includes("pdf") ||
+        file.type.includes("word") ||
+        file.type.includes("text")
+      ) {
+        fileType = "document";
       }
-      else {
-        console.log("📄 Document/text detected");
 
-        window.pendingUpload = {
-          type: "file",
-          file,
-          data: fileData
-        };
-      }
+      window.pendingUpload = {
+        name: file.name,
+        mimeType: file.type,
+        size: file.size,
+        type: fileType,
+        data: fileData
+      };
+
+      console.log("✅ Upload stored for AI:", window.pendingUpload);
     };
 
-    // STEP 2C.3 - Convert file
-    if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
-      reader.readAsDataURL(file); // images/videos
+    if (
+      file.type.startsWith("image/") ||
+      file.type.startsWith("video/")
+    ) {
+      reader.readAsDataURL(file);
     } else {
-      reader.readAsText(file); // documents
+      reader.readAsText(file);
     }
   });
 });
-
-
