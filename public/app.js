@@ -357,7 +357,7 @@ window.pendingUpload = null;
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       message: text,
-      upload: uploadPayload,
+      upload: uploadPayload || window.lastUpload || null,
       aiMode: window.aiMode,
       system: {
         brand: "Zed MentorIQ AI",
