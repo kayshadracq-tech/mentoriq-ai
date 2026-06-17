@@ -260,11 +260,19 @@ if (!text && window.pendingUpload) {
       lowerText.includes("draw") ||
       lowerText.includes("image of"),
 
-    editImage:
-      lowerText.includes("edit image") ||
-      lowerText.includes("modify") ||
-      lowerText.includes("enhance") ||
-      lowerText.includes("change background"),
+  editImage:
+  lowerText.includes("edit") ||
+  lowerText.includes("modify") ||
+  lowerText.includes("enhance") ||
+  lowerText.includes("improve") ||
+  lowerText.includes("upscale") ||
+  lowerText.includes("sharpen") ||
+  lowerText.includes("remove") ||
+  lowerText.includes("replace") ||
+  lowerText.includes("change background") ||
+  lowerText.includes("put me in") ||
+  lowerText.includes("add") ||
+  lowerText.includes("make"),
 
     signature: true
   };
@@ -273,7 +281,15 @@ if (!text && window.pendingUpload) {
      STEP 3 - AI UPLOAD ENGINE HOOK
   ========================= */
 
-  let uploadPayload = null;
+let uploadPayload = null;
+  // Reuse last uploaded image for edits
+if (
+  !window.pendingUpload &&
+  window.lastUpload &&
+  window.aiMode.editImage
+) {
+  uploadPayload = window.lastUpload;
+}
 
   if (window.pendingUpload) {
     const upload = window.pendingUpload;
@@ -296,10 +312,13 @@ if (!text && window.pendingUpload) {
       text: uploadNote
     });
 
-    uploadPayload = upload;
+uploadPayload = upload;
 
-    window.lastUpload = upload;
-    window.pendingUpload = null;
+// Keep a persistent copy
+window.lastUpload = upload;
+
+// Only clear pending upload
+window.pendingUpload = null;
   }
 
   /* USER MESSAGE */
