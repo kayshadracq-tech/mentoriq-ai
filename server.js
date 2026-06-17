@@ -16,20 +16,19 @@ async function generateImage(prompt) {
 }
 
 
-async function editImage(imageUrl, prompt) {
-  // Ensure we actually pass the image into Pollinations
-  const basePrompt = encodeURIComponent(prompt);
+ async function editImage(imageUrl, prompt) {
+  const encodedPrompt = encodeURIComponent(prompt);
 
-  const imageParam = imageUrl
-    ? `&image=${encodeURIComponent(imageUrl)}`
+
+  // Pollinations supports image-to-image via query parameter OR inline URL reference
+  // Stable hybrid-safe format
+
+  const encodedImage = imageUrl
+    ? encodeURIComponent(imageUrl)
     : "";
 
-  // Use strongest free edit-capable model hint
-  const model = "&model=kontext";
-
-  return `https://image.pollinations.ai/prompt/${basePrompt}?${model}${imageParam}`;
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodedImage}`;
 }
-
 
 /**
  * SIMPLE MEMORY (per server session)
@@ -126,9 +125,12 @@ chatMemory.push({
   });
 }
 
-    if (isEditRequest && upload) {
-  const editedUrl = await editImage(upload.data, message);
-
+  if (isEditRequest && upload) {
+  const editedUrl = await editImage(
+  upload.type === "image" ? upload.data : null,
+  message
+);
+      
   return res.json({
     reply: "Image edited successfully.",
     imageUrl: editedUrl
