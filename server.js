@@ -17,9 +17,17 @@ async function generateImage(prompt) {
 
 
 async function editImage(imageUrl, prompt) {
-  const combinedPrompt = `${prompt} (based on existing image)`;
+  // Ensure we actually pass the image into Pollinations
+  const basePrompt = encodeURIComponent(prompt);
 
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(combinedPrompt)}`;
+  const imageParam = imageUrl
+    ? `&image=${encodeURIComponent(imageUrl)}`
+    : "";
+
+  // Use strongest free edit-capable model hint
+  const model = "&model=kontext";
+
+  return `https://image.pollinations.ai/prompt/${basePrompt}?${model}${imageParam}`;
 }
 
 
