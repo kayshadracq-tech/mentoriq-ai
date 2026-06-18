@@ -16,15 +16,13 @@ async function generateImage(prompt) {
 }
 
 
- async function editImage(imageUrl, prompt) {
-  const encodedPrompt = encodeURIComponent(prompt);
-
-  const encodedImage = imageUrl
-    ? encodeURIComponent(imageUrl)
-    : "";
-
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&image=${encodedImage}`;
+ async function editImage(imageBase64, prompt) {
+  return {
+    prompt,
+    image: imageBase64
+  };
 }
+
 /**
  * SIMPLE MEMORY (per server session)
  * NOTE: resets when Render restarts (free tier limitation)
@@ -121,7 +119,9 @@ chatMemory.push({
 }
 
   if (isEditRequest && upload) {
-  const editedUrl = await editImage(upload.data, message);
+  const payload = await editImage(upload.data, message);
+
+const editedUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(payload.prompt)}`;
       
   return res.json({
     reply: "Image edited successfully.",
