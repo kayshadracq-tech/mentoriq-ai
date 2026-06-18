@@ -16,10 +16,14 @@ async function generateImage(prompt) {
 }
 
 
- async function editImage(imageBase64, prompt) {
+ async function editImage(imageUrl, prompt) {
   const encodedPrompt = encodeURIComponent(prompt);
 
-  return `https://enter.pollinations.ai/prompt/${encodedPrompt}?model=kontext`;
+  const encodedImage = imageUrl
+    ? encodeURIComponent(imageUrl)
+    : "";
+
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=flux&image=${encodedImage}`;
 }
 /**
  * SIMPLE MEMORY (per server session)
