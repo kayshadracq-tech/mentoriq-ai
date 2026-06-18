@@ -4,7 +4,7 @@ import cors from "cors";
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: "25mb" }));
 app.use(express.static("public"));
 
 const API_KEY = process.env.OPENROUTER_API_KEY;
@@ -16,25 +16,11 @@ async function generateImage(prompt) {
 }
 
 
- async function editImage(imageUrl, prompt) {
-
-  console.log("IMAGE SIZE:", imageUrl ? imageUrl.length : 0);
-
+ async function editImage(imageBase64, prompt) {
   const encodedPrompt = encodeURIComponent(prompt);
 
-  const encodedImage = imageUrl
-    ? encodeURIComponent(imageUrl)
-    : "";
-
-  const finalUrl =
-    `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodedImage}`;
-
-  console.log("EDIT URL LENGTH:", finalUrl.length);
-  console.log("EDIT URL START:", finalUrl.substring(0, 300));
-
-  return finalUrl;
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext`;
 }
-
 /**
  * SIMPLE MEMORY (per server session)
  * NOTE: resets when Render restarts (free tier limitation)
@@ -131,10 +117,7 @@ chatMemory.push({
 }
 
   if (isEditRequest && upload) {
-  const editedUrl = await editImage(
-  upload.type === "image" ? upload.data : null,
-  message
-);
+  const editedUrl = await editImage(upload.data, message);
       
   return res.json({
     reply: "Image edited successfully.",
