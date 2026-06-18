@@ -4,9 +4,9 @@ import cors from "cors";
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "25mb" }));
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(express.static("public"));
-
 const API_KEY = process.env.OPENROUTER_API_KEY;
 const URL = "https://openrouter.ai/api/v1/chat/completions";
 
@@ -17,10 +17,9 @@ async function generateImage(prompt) {
 
 
  async function editImage(imageBase64, prompt) {
-  return {
-    prompt,
-    image: imageBase64
-  };
+  const base64 = encodeURIComponent(imageBase64);
+
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?image=${base64}&model=kontext`;
 }
 
 /**
@@ -119,9 +118,7 @@ chatMemory.push({
 }
 
   if (isEditRequest && upload) {
-  const payload = await editImage(upload.data, message);
-
-const editedUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(payload.prompt)}`;
+  const editedUrl = await editImage(upload.data, message);
       
   return res.json({
     reply: "Image edited successfully.",
