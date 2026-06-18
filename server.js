@@ -17,17 +17,22 @@ async function generateImage(prompt) {
 
 
  async function editImage(imageUrl, prompt) {
+
+  console.log("IMAGE SIZE:", imageUrl ? imageUrl.length : 0);
+
   const encodedPrompt = encodeURIComponent(prompt);
-
-
-  // Pollinations supports image-to-image via query parameter OR inline URL reference
-  // Stable hybrid-safe format
 
   const encodedImage = imageUrl
     ? encodeURIComponent(imageUrl)
     : "";
 
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodedImage}`;
+  const finalUrl =
+    `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext&image=${encodedImage}`;
+
+  console.log("EDIT URL LENGTH:", finalUrl.length);
+  console.log("EDIT URL START:", finalUrl.substring(0, 300));
+
+  return finalUrl;
 }
 
 /**
