@@ -19,7 +19,7 @@ async function generateImage(prompt) {
  async function editImage(imageBase64, prompt) {
   const encodedPrompt = encodeURIComponent(prompt);
 
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?model=kontext`;
+  return `https://enter.pollinations.ai/prompt/${encodedPrompt}?model=kontext`;
 }
 /**
  * SIMPLE MEMORY (per server session)
